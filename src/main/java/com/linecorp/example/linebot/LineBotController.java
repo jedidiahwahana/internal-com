@@ -58,7 +58,16 @@ public class LineBotController
         
         System.out.println("Text from User: " + msgText);
         
-        getMovieData(msgText);
+        try {
+            getMovieData(msgText);
+        } catch (IOException e) {
+            System.out.println("Exception is raised ");
+            e.printStackTrace();
+        }
+        catch(Exception e)
+        {
+            System.out.println("Unknown exception occurs");
+        }
         
         return new ResponseEntity<String>(HttpStatus.OK);
     }
