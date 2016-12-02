@@ -75,7 +75,7 @@ public class LineBotController
     private void getMovieData(String title) throws IOException{
         // Act as client with GET method
         
-        String URI = "http://www.omdbapi.com/?" + title;
+        String URI = "http://www.omdbapi.com/?t=" + title + "&r=json";
         
         HttpGet get = new HttpGet(URI);
         
