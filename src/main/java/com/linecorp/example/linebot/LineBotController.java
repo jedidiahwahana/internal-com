@@ -58,10 +58,12 @@ public class LineBotController
         
         System.out.println("Text from User: " + msgText);
         
+        getMovieData(msgText);
+        
         return new ResponseEntity<String>(HttpStatus.OK);
     }
     
-    private void getProfile(String title) throws IOException{
+    private void getMovieData(String title) throws IOException{
         // Act as client with GET method
         
         String URI = "http://www.omdbapi.com/?" + title;
