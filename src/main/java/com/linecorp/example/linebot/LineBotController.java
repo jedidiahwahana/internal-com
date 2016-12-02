@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import org.json.JSONObject;
+import org.json.JSONArray;
+
 import com.linecorp.bot.client.LineSignatureValidator;
 
 @RestController
