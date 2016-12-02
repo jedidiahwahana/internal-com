@@ -37,6 +37,14 @@ public class LineBotController
             System.out.println("Payload: " + aPayload);
         }
         
+        JSONObject jObject = new JSONObject(aPayload);
+        JSONArray jArray = jObject.getJSONArray("events");
+        JSONObject jObj = jArray.getJSONObject(0);
+        JSONObject jMessage = jObj.getJSONObject("message");
+        String msgText = jMessage.getString("text");
+        
+        System.out.println("Text from User: " + msgText);
+        
         return new ResponseEntity<String>(HttpStatus.OK);
     }
 };
