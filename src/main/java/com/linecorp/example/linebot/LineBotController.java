@@ -1,6 +1,9 @@
 
 package com.linecorp.example.linebot;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.time.LocalDateTime;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +14,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.HttpClient;
+
 import org.json.JSONObject;
 import org.json.JSONArray;
 
@@ -20,6 +28,8 @@ import com.linecorp.bot.client.LineSignatureValidator;
 @RequestMapping(value="/linebot")
 public class LineBotController
 {
+    HttpClient c = HttpClientBuilder.create().build();
+    
     @RequestMapping(value="/callback", method=RequestMethod.POST)
     public ResponseEntity<String> callback(
         @RequestHeader("X-Line-Signature") String aXLineSignature,
@@ -49,5 +59,28 @@ public class LineBotController
         System.out.println("Text from User: " + msgText);
         
         return new ResponseEntity<String>(HttpStatus.OK);
+    }
+    
+    private void getProfile(String title) throws IOException{
+        // Act as client with GET method
+        
+        String URI = "http://www.omdbapi.com/?" + title;
+        
+        HttpGet get = new HttpGet(URI);
+        
+        HttpResponse responseGet = c.execute(get);
+        
+        // Get the response from the GET request
+        BufferedReader brd = new BufferedReader(new InputStreamReader(responseGet.getEntity().getContent()));
+        
+        StringBuffer resultGet = new StringBuffer();
+        String lineGet = "";
+        while ((lineGet = brd.readLine()) != null) {
+            resultGet.append(lineGet);
+        }
+        
+        // Change type of resultGet to JSONObject
+        JSONObject jObjGet = new JSONObject(resultGet.toString());
+        System.out.println("OMDb responses: " + resultGet.toString());
     }
 };
