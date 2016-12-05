@@ -4,6 +4,8 @@ package com.linecorp.example.linebot;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 import java.time.LocalDateTime;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,8 +18,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 
 import org.json.JSONObject;
 import org.json.JSONArray;
@@ -79,16 +85,9 @@ public class LineBotController
         
         String moviePlot = jResponse.getString("Plot");
         
-        TextMessage textMessage = new TextMessage(moviePlot);
-        ReplyMessage replyMessage = new ReplyMessage(reply_token, textMessage);
         
         try {
-            Response<BotApiResponse> response = LineMessagingServiceBuilder
-                .create("caa222f011bb7e3b992540c00e94d763")
-                .build()
-                .replyMessage(replyMessage)
-                .execute();
-            System.out.println(response.code() + " " + response.message());
+            replyToUser(reply_token, moviePlot);
         } catch (IOException e) {
             System.out.println("Exception is raised ");
             e.printStackTrace();
@@ -125,4 +124,55 @@ public class LineBotController
         
         return jObjGet;
     }
-};
+    
+    private void replyToUser(String rToken, String movie_plot) throws IOException{
+        
+        TextMessage textMessage = new TextMessage(movie_plot);
+        ReplyMessage replyMessage = new ReplyMessage(rToken, textMessage);
+        
+        try {
+            Response<BotApiResponse> response = LineMessagingServiceBuilder
+                .create("caa222f011bb7e3b992540c00e94d763")
+                .build()
+                .replyMessage(replyMessage)
+                .execute();
+            System.out.println("Reply Message: " + response.code() + " " + response.message());
+        } catch (IOException e) {
+            System.out.println("Exception is raised ");
+            e.printStackTrace();
+        }
+        catch(Exception e)
+        {
+            System.out.println("Unknown exception occurs");
+        }
+        
+        HttpPost post = new HttpPost("https://api.line.me/v2/bot/message/reply");
+        
+        //  Add header
+        post.setHeader("Content-type", "application/json");
+        post.setHeader("Authorization", "Bearer caa222f011bb7e3b992540c00e94d763");
+        
+        // Insert parameters for request in ArrayList
+        List<NameValuePair> content = new ArrayList<NameValuePair>();
+        content.add(new BasicNameValuePair("replyToken", rToken));
+        content.add(new BasicNameValuePair("messages", movie_plot));
+        
+        // Hands ArrayList of parameters to the request
+        post.setEntity(new UrlEncodedFormEntity(content));
+        
+        HttpResponse response = c.execute(post);
+        
+        // Get the response from the POST request
+        BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+        
+        StringBuffer result = new StringBuffer();
+        String line = "";
+        while ((line = rd.readLine()) != null)
+        {
+            result.append(line);
+        }
+        
+        // Change type of result to JSONObject
+        JSONObject jObj = new JSONObject(result.toString());
+    }
+}
