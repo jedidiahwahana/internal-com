@@ -32,6 +32,7 @@ import retrofit2.Response;
 
 import com.linecorp.bot.model.ReplyMessage;
 import com.linecorp.bot.model.message.TextMessage;
+import com.linecorp.bot.model.message.VideoMessage;
 import com.linecorp.bot.model.response.BotApiResponse;
 import com.linecorp.bot.client.LineSignatureValidator;
 import com.linecorp.bot.client.LineMessagingServiceBuilder;
@@ -127,7 +128,8 @@ public class LineBotController
     private void replyToUser(String rToken, String movie_plot) throws IOException{
         
         TextMessage textMessage = new TextMessage(movie_plot);
-        ReplyMessage replyMessage = new ReplyMessage(rToken, textMessage);
+        VideoMessage videoMessage = new VideoMessage("https://www.dropbox.com/s/1u5tod7h94ihrya/anKz8XB_460sv.mp4?dl=0", null);
+        ReplyMessage replyMessage = new ReplyMessage(rToken, videoMessage);
         
         try {
             Response<BotApiResponse> response = LineMessagingServiceBuilder
@@ -144,35 +146,5 @@ public class LineBotController
         {
             System.out.println("Unknown exception occurs");
         }
-        
-//        HttpPost post = new HttpPost("https://api.line.me/v2/bot/message/reply");
-//        
-//        //  Add header
-//        post.setHeader("Content-type", "application/json");
-//        post.setHeader("Authorization", "Bearer caa222f011bb7e3b992540c00e94d763");
-//        
-//        // Insert parameters for request in ArrayList
-//        List<NameValuePair> content = new ArrayList<NameValuePair>();
-//        content.add(new BasicNameValuePair("replyToken", rToken));
-//        content.add(new BasicNameValuePair("messages", movie_plot));
-//        
-//        // Hands ArrayList of parameters to the request
-//        post.setEntity(new UrlEncodedFormEntity(content));
-//        
-//        HttpResponse response = c.execute(post);
-//        
-//        // Get the response from the POST request
-//        BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-//        
-//        StringBuffer result = new StringBuffer();
-//        String line = "";
-//        while ((line = rd.readLine()) != null)
-//        {
-//            result.append(line);
-//        }
-//        
-//        // Change type of result to JSONObject
-//        JSONObject jObj = new JSONObject(result.toString());
-//        System.out.println("Response: " + result.toString());
     }
 }
