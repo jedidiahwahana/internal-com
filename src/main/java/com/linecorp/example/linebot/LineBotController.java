@@ -22,7 +22,13 @@ import org.apache.http.client.HttpClient;
 import org.json.JSONObject;
 import org.json.JSONArray;
 
+import retrofit2.Response;
+
+import com.linecorp.bot.model.ReplyMessage;
+import com.linecorp.bot.model.message.TextMessage;
+import com.linecorp.bot.model.response.BotApiResponse;
 import com.linecorp.bot.client.LineSignatureValidator;
+import com.linecorp.bot.client.LineMessagingServiceBuilder;
 
 @RestController
 @RequestMapping(value="/linebot")
@@ -53,13 +59,36 @@ public class LineBotController
         JSONObject jObject = new JSONObject(aPayload);
         JSONArray jArray = jObject.getJSONArray("events");
         JSONObject jObj = jArray.getJSONObject(0);
+        String reply_token = jObj.getString("replyToken");
         JSONObject jMessage = jObj.getJSONObject("message");
         String msgText = jMessage.getString("text");
         
         System.out.println("Text from User: " + msgText);
         
+        JSONObject jResponse = new JSONObject();
         try {
-            getMovieData(msgText);
+            jResponse = getMovieData(msgText);
+        } catch (IOException e) {
+            System.out.println("Exception is raised ");
+            e.printStackTrace();
+        }
+        catch(Exception e)
+        {
+            System.out.println("Unknown exception occurs");
+        }
+        
+        String moviePlot = jResponse.getString("Plot");
+        
+        TextMessage textMessage = new TextMessage(moviePlot);
+        ReplyMessage replyMessage = new ReplyMessage(reply_token, textMessage);
+        
+        try {
+            Response<BotApiResponse> response = LineMessagingServiceBuilder
+                .create("caa222f011bb7e3b992540c00e94d763")
+                .build()
+                .replyMessage(replyMessage)
+                .execute();
+            System.out.println(response.code() + " " + response.message());
         } catch (IOException e) {
             System.out.println("Exception is raised ");
             e.printStackTrace();
@@ -72,7 +101,7 @@ public class LineBotController
         return new ResponseEntity<String>(HttpStatus.OK);
     }
     
-    private void getMovieData(String title) throws IOException{
+    private JSONObject getMovieData(String title) throws IOException{
         // Act as client with GET method
         
         String URI = "http://www.omdbapi.com/?t=" + title + "&r=json";
@@ -93,5 +122,7 @@ public class LineBotController
         // Change type of resultGet to JSONObject
         JSONObject jObjGet = new JSONObject(resultGet.toString());
         System.out.println("OMDb responses: " + resultGet.toString());
+        
+        return jObjGet;
     }
 };

@@ -17,8 +17,6 @@ buildscript
 	}
 }
 
-
-
 jar
 //war
 {
@@ -46,6 +44,14 @@ configure(distclean)
 	group = 'Build'
 	description = 'Clean the build result and the .gradle directory'
 }
+
+dependencyManagement {
+        dependencies {
+            dependency 'com.squareup.retrofit2:converter-jackson:2.1.0'
+            dependency 'com.squareup.retrofit2:retrofit:2.1.0'
+        }
+    }
+
 
 dependencies
 {
