@@ -4,6 +4,7 @@ package com.linecorp.example.linebot;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDateTime;
@@ -30,12 +31,17 @@ import org.json.JSONArray;
 
 import retrofit2.Response;
 
+import com.linecorp.bot.model.action.PostbackAction;
+import com.linecorp.bot.model.action.URIAction;
+import com.linecorp.bot.model.action.MessageAction;
 import com.linecorp.bot.model.PushMessage;
 import com.linecorp.bot.model.ReplyMessage;
 import com.linecorp.bot.model.message.Message;
 import com.linecorp.bot.model.message.TextMessage;
+import com.linecorp.bot.model.message.TemplateMessage;
 import com.linecorp.bot.model.message.VideoMessage;
 import com.linecorp.bot.model.message.ImageMessage;
+import com.linecorp.bot.model.message.template.ButtonsTemplate;
 import com.linecorp.bot.model.response.BotApiResponse;
 import com.linecorp.bot.client.LineSignatureValidator;
 import com.linecorp.bot.client.LineMessagingServiceBuilder;
@@ -81,31 +87,11 @@ public class LineBotController
         JSONObject jResponse = new JSONObject();
         try {
             jResponse = getMovieData(msgText);
-        } catch (IOException e) {
-            System.out.println("Exception is raised ");
-            e.printStackTrace();
-        }
-        catch(Exception e)
-        {
-            System.out.println("Unknown exception occurs");
-        }
-        
-        String moviePlot = jResponse.getString("Plot");
-        String posterURL = jResponse.getString("Poster");
-        
-        try {
+            String moviePlot = jResponse.getString("Plot");
+            String posterURL = jResponse.getString("Poster");
             replyToUser(reply_token, moviePlot, posterURL);
-        } catch (IOException e) {
-            System.out.println("Exception is raised ");
-            e.printStackTrace();
-        }
-        catch(Exception e)
-        {
-            System.out.println("Unknown exception occurs");
-        }
-        
-        try {
             pushToUser();
+            templateForUser(posterURL);
         } catch (IOException e) {
             System.out.println("Exception is raised ");
             e.printStackTrace();
@@ -181,5 +167,13 @@ public class LineBotController
                     .execute();
         System.out.println(response.code() + " " + response.message());
     
+    }
+    
+    private void templateForUser(String poster_url){
+        ButtonsTemplate buttonsTemplate = new ButtonsTemplate(poster_url,"My button sample","Hello, my button",Arrays.asList(new URIAction("Go to line.me","https://line.me"),
+                                new PostbackAction("Say hello1","hello こんにちは"),
+                                new PostbackAction("言 hello2","hello こんにちは","hello こんにちは"),
+                                new MessageAction("Say message","Rice=米")));
+        TemplateMessage templateMessage = new TemplateMessage("Button alt text", buttonsTemplate);
     }
 }
