@@ -85,7 +85,6 @@ public class LineBotController
         
         String moviePlot = jResponse.getString("Plot");
         
-        
         try {
             replyToUser(reply_token, moviePlot);
         } catch (IOException e) {
@@ -130,21 +129,21 @@ public class LineBotController
         TextMessage textMessage = new TextMessage(movie_plot);
         ReplyMessage replyMessage = new ReplyMessage(rToken, textMessage);
         
-        try {
-            Response<BotApiResponse> response = LineMessagingServiceBuilder
-                .create("caa222f011bb7e3b992540c00e94d763")
-                .build()
-                .replyMessage(replyMessage)
-                .execute();
-            System.out.println("Reply Message: " + response.code() + " " + response.message());
-        } catch (IOException e) {
-            System.out.println("Exception is raised ");
-            e.printStackTrace();
-        }
-        catch(Exception e)
-        {
-            System.out.println("Unknown exception occurs");
-        }
+//        try {
+//            Response<BotApiResponse> response = LineMessagingServiceBuilder
+//                .create("caa222f011bb7e3b992540c00e94d763")
+//                .build()
+//                .replyMessage(replyMessage)
+//                .execute();
+//            System.out.println("Reply Message: " + response.code() + " " + response.message());
+//        } catch (IOException e) {
+//            System.out.println("Exception is raised ");
+//            e.printStackTrace();
+//        }
+//        catch(Exception e)
+//        {
+//            System.out.println("Unknown exception occurs");
+//        }
         
         HttpPost post = new HttpPost("https://api.line.me/v2/bot/message/reply");
         
