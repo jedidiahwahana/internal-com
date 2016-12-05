@@ -131,7 +131,7 @@ public class LineBotController
         
         try {
             Response<BotApiResponse> response = LineMessagingServiceBuilder
-                .create("caa222f011bb7e3b992540c00e94d763")
+                .create("i4iDYDwh7VEyNHSAMRMGjqFjlZbi9CNng34yVW+b6d2DIggg1WExUoZNIYqj749IsJC+nbEt1ciuqy/oHR2XkwYDqB/fC5jN6FHYM9F2MMcOQVQpIcAkyxUskdg8jTOP6g005lISkzpZRkoxTUcRGgdB04t89/1O/w1cDnyilFU=")
                 .build()
                 .replyMessage(replyMessage)
                 .execute();
