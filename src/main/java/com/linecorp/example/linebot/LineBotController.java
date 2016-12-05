@@ -130,7 +130,7 @@ public class LineBotController
     private void replyToUser(String rToken, String movie_plot, String poster_url) throws IOException{
         
         TextMessage textMessage = new TextMessage(movie_plot);
-        VideoMessage videoMessage = new VideoMessage("https://www.dropbox.com/s/1u5tod7h94ihrya/anKz8XB_460sv.mp4?dl=0", "https://www.dropbox.com/s/fpt5iguak5dcpgp/Screen%20Shot%202016-12-05%20at%201.33.04%20PM.jpg?dl=0");
+        VideoMessage videoMessage = new VideoMessage("https://www.dropbox.com/s/1u5tod7h94ihrya/anKz8XB_460sv.mp4", "https://www.dropbox.com/s/fpt5iguak5dcpgp/Screen%20Shot%202016-12-05%20at%201.33.04%20PM.jpg");
         ImageMessage imageMessage = new ImageMessage(poster_url, poster_url);
         ReplyMessage replyMessage = new ReplyMessage(rToken, videoMessage);
         
