@@ -33,6 +33,7 @@ import retrofit2.Response;
 import com.linecorp.bot.model.ReplyMessage;
 import com.linecorp.bot.model.message.TextMessage;
 import com.linecorp.bot.model.message.VideoMessage;
+import com.linecorp.bot.model.message.ImageMessage;
 import com.linecorp.bot.model.response.BotApiResponse;
 import com.linecorp.bot.client.LineSignatureValidator;
 import com.linecorp.bot.client.LineMessagingServiceBuilder;
@@ -67,6 +68,7 @@ public class LineBotController
         JSONArray jArray = jObject.getJSONArray("events");
         JSONObject jObj = jArray.getJSONObject(0);
         String reply_token = jObj.getString("replyToken");
+        String posterURL = jObj.getString("Poster");
         JSONObject jMessage = jObj.getJSONObject("message");
         String msgText = jMessage.getString("text");
         
@@ -87,7 +89,7 @@ public class LineBotController
         String moviePlot = jResponse.getString("Plot");
         
         try {
-            replyToUser(reply_token, moviePlot);
+            replyToUser(reply_token, moviePlot, posterURL);
         } catch (IOException e) {
             System.out.println("Exception is raised ");
             e.printStackTrace();
@@ -125,10 +127,11 @@ public class LineBotController
         return jObjGet;
     }
     
-    private void replyToUser(String rToken, String movie_plot) throws IOException{
+    private void replyToUser(String rToken, String movie_plot, String poster_url) throws IOException{
         
         TextMessage textMessage = new TextMessage(movie_plot);
         VideoMessage videoMessage = new VideoMessage("https://www.dropbox.com/s/1u5tod7h94ihrya/anKz8XB_460sv.mp4?dl=0", "https://www.dropbox.com/s/kv81w7xyvn0swps/TTD_1%281%29.jpg?dl=0");
+        ImageMessage imageMessage = new ImageMessage(poster_url, poster_url);
         ReplyMessage replyMessage = new ReplyMessage(rToken, videoMessage);
         
         try {
