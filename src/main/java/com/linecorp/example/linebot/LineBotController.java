@@ -30,6 +30,7 @@ import org.json.JSONArray;
 
 import retrofit2.Response;
 
+import com.linecorp.bot.model.PushMessage;
 import com.linecorp.bot.model.ReplyMessage;
 import com.linecorp.bot.model.message.Message;
 import com.linecorp.bot.model.message.TextMessage;
@@ -44,6 +45,8 @@ import com.linecorp.bot.client.LineMessagingServiceBuilder;
 public class LineBotController
 {
     HttpClient c = HttpClientBuilder.create().build();
+    private static final String CHANNEL_SECRET = "caa222f011bb7e3b992540c00e94d763";
+    private static final String CHANNEL_ACCESS_TOKEN = "i4iDYDwh7VEyNHSAMRMGjqFjlZbi9CNng34yVW+b6d2DIggg1WExUoZNIYqj749IsJC+nbEt1ciuqy/oHR2XkwYDqB/fC5jN6FHYM9F2MMcOQVQpIcAkyxUskdg8jTOP6g005lISkzpZRkoxTUcRGgdB04t89/1O/w1cDnyilFU=";
     
     @RequestMapping(value="/callback", method=RequestMethod.POST)
     public ResponseEntity<String> callback(
@@ -56,7 +59,7 @@ public class LineBotController
         
         System.out.println(text);
         
-        final boolean valid=new LineSignatureValidator("caa222f011bb7e3b992540c00e94d763".getBytes()).validateSignature(aPayload.getBytes(), aXLineSignature);
+        final boolean valid=new LineSignatureValidator(CHANNEL_SECRET.getBytes()).validateSignature(aPayload.getBytes(), aXLineSignature);
         
         System.out.println("The signature is: " + (valid ? "valid" : "tidak valid"));
         
@@ -71,6 +74,7 @@ public class LineBotController
         String reply_token = jObj.getString("replyToken");
         JSONObject jMessage = jObj.getJSONObject("message");
         String msgText = jMessage.getString("text");
+        msgText = msgText.replace(" ", "+");
         
         System.out.println("Text from User: " + msgText);
         
@@ -91,6 +95,17 @@ public class LineBotController
         
         try {
             replyToUser(reply_token, moviePlot, posterURL);
+        } catch (IOException e) {
+            System.out.println("Exception is raised ");
+            e.printStackTrace();
+        }
+        catch(Exception e)
+        {
+            System.out.println("Unknown exception occurs");
+        }
+        
+        try {
+            pushToUser();
         } catch (IOException e) {
             System.out.println("Exception is raised ");
             e.printStackTrace();
@@ -131,19 +146,17 @@ public class LineBotController
     private void replyToUser(String rToken, String movie_plot, String poster_url) throws IOException{
         
         TextMessage textMessage = new TextMessage(movie_plot);
-        VideoMessage videoMessage = new VideoMessage("https://www.dropbox.com/s/1u5tod7h94ihrya/anKz8XB_460sv.mp4", "https://www.dropbox.com/s/fpt5iguak5dcpgp/Screen%20Shot%202016-12-05%20at%201.33.04%20PM.jpg");
         ImageMessage imageMessage = new ImageMessage(poster_url, poster_url);
         
         List<Message> allMessage = new ArrayList<Message>();
         allMessage.add(textMessage);
-        allMessage.add(videoMessage);
         allMessage.add(imageMessage);
         
         ReplyMessage replyMessage = new ReplyMessage(rToken, allMessage);
         
         try {
             Response<BotApiResponse> response = LineMessagingServiceBuilder
-                .create("i4iDYDwh7VEyNHSAMRMGjqFjlZbi9CNng34yVW+b6d2DIggg1WExUoZNIYqj749IsJC+nbEt1ciuqy/oHR2XkwYDqB/fC5jN6FHYM9F2MMcOQVQpIcAkyxUskdg8jTOP6g005lISkzpZRkoxTUcRGgdB04t89/1O/w1cDnyilFU=")
+                .create(CHANNEL_ACCESS_TOKEN)
                 .build()
                 .replyMessage(replyMessage)
                 .execute();
@@ -156,5 +169,17 @@ public class LineBotController
         {
             System.out.println("Unknown exception occurs");
         }
+    }
+    
+    private void pushToUser() throws IOException{
+        TextMessage textMessage = new TextMessage("hello");
+        PushMessage pushMessage = new PushMessage("Uc8d3ada05b0c56e1e0f73b53064d6171",textMessage);
+        Response<BotApiResponse> response = LineMessagingServiceBuilder
+                    .create(CHANNEL_ACCESS_TOKEN)
+                    .build()
+                    .pushMessage(pushMessage)
+                    .execute();
+        System.out.println(response.code() + " " + response.message());
+    
     }
 }
