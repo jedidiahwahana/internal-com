@@ -68,7 +68,6 @@ public class LineBotController
         JSONArray jArray = jObject.getJSONArray("events");
         JSONObject jObj = jArray.getJSONObject(0);
         String reply_token = jObj.getString("replyToken");
-        String posterURL = jObj.getString("Poster");
         JSONObject jMessage = jObj.getJSONObject("message");
         String msgText = jMessage.getString("text");
         
@@ -87,6 +86,7 @@ public class LineBotController
         }
         
         String moviePlot = jResponse.getString("Plot");
+        String posterURL = jResponse.getString("Poster");
         
         try {
             replyToUser(reply_token, moviePlot, posterURL);
