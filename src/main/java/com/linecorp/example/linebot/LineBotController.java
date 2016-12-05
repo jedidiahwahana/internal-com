@@ -173,5 +173,6 @@ public class LineBotController
         
         // Change type of result to JSONObject
         JSONObject jObj = new JSONObject(result.toString());
+        System.out.println("Response: " + result.toString());
     }
 }
