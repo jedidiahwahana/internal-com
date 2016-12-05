@@ -133,7 +133,7 @@ public class LineBotController
         VideoMessage videoMessage = new VideoMessage("https://www.dropbox.com/s/1u5tod7h94ihrya/anKz8XB_460sv.mp4", "https://www.dropbox.com/s/fpt5iguak5dcpgp/Screen%20Shot%202016-12-05%20at%201.33.04%20PM.jpg");
 //        ImageMessage imageMessage = new ImageMessage(poster_url, poster_url);
         ImageMessage imageMessage = new ImageMessage("https://www.dropbox.com/s/fpt5iguak5dcpgp/Screen%20Shot%202016-12-05%20at%201.33.04%20PM.jpg", "https://www.dropbox.com/s/fpt5iguak5dcpgp/Screen%20Shot%202016-12-05%20at%201.33.04%20PM.jpg");
-        ReplyMessage replyMessage = new ReplyMessage(rToken, videoMessage);
+        ReplyMessage replyMessage = new ReplyMessage(rToken, imageMessage);
         
         try {
             Response<BotApiResponse> response = LineMessagingServiceBuilder
