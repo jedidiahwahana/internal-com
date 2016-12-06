@@ -95,22 +95,22 @@ public class LineBotController
         
         System.out.println("Text from User: " + msgText);
         
-        JSONObject jResponse = new JSONObject();
-        try {
-            jResponse = getMovieData(msgText);
-            String moviePlot = jResponse.getString("Plot");
-            String posterURL = jResponse.getString("Poster");
+//        JSONObject jResponse = new JSONObject();
+//        try {
+//            jResponse = getMovieData(msgText);
+//            String moviePlot = jResponse.getString("Plot");
+//            String posterURL = jResponse.getString("Poster");
 //            replyToUser(reply_token, moviePlot, posterURL);
 //            pushToUser();
-            templateForUser(posterURL);
-        } catch (IOException e) {
-            System.out.println("Exception is raised ");
-            e.printStackTrace();
-        }
-        catch(Exception e)
-        {
-            System.out.println("Unknown exception occurs");
-        }
+//            templateForUser(posterURL);
+//        } catch (IOException e) {
+//            System.out.println("Exception is raised ");
+//            e.printStackTrace();
+//        }
+//        catch(Exception e)
+//        {
+//            System.out.println("Unknown exception occurs");
+//        }
         
         try {
             if (!msgType.equals("text")){
