@@ -229,6 +229,7 @@ public class LineBotController
         if (response.isSuccessful()) {
             ResponseBody content = response.body();
             Path tempFile = Files.createTempFile(Paths.get("/Users/line/Downloads"), "foo", "bar");
+            System.out.printf("Copy to temporary file %s%n", tempFile.toString());
             Files.copy(content.byteStream(), tempFile);
         } else {
             System.out.println(response.code() + " " + response.message());
