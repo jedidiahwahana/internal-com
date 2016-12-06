@@ -228,7 +228,7 @@ public class LineBotController
         CarouselTemplate carouselTemplate = new CarouselTemplate(
                     Arrays.asList(new CarouselColumn
                                     (poster_url, "hoge", "fuga", Arrays.asList(new URIAction("Go to line.me", "https://line.me"), new PostbackAction("Say hello1", "hello こんにちは"))),
-                                  new CarouselColumn(poster_url, "hoge", "fuga", Arrays.asList(new PostbackAction("言 hello2", "hello こんにちは", "hello こんにちは"), new MessageAction("Say message", "Rice=米")))));
+                                  new CarouselColumn(poster_url, "hoge", "fuga", Arrays.asList(new PostbackAction("Next", "Rambo", "You search for Rambo"), new MessageAction("Say message", "Rice=米")))));
         TemplateMessage templateMessage = new TemplateMessage("Carousel alt text", carouselTemplate);
         PushMessage pushMessage = new PushMessage(sourceId,templateMessage);
         Response<BotApiResponse> response = LineMessagingServiceBuilder
