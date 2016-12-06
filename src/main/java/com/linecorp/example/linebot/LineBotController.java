@@ -221,5 +221,13 @@ public class LineBotController
         } else {
             System.out.println(response.code() + " " + response.message());
         }
+//        System.out.println("Got content-type: {}", content.contentType());
+        String fileURL = "https://api.line.me/v2/bot/message/" + messageId + "/content";
+        String saveDir = "/User/line/Downloads";
+        try {
+            HttpDownloadUtility.downloadFile(fileURL, saveDir, CHANNEL_ACCESS_TOKEN);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 }
