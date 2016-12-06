@@ -97,22 +97,23 @@ public class LineBotController
         
         System.out.println("Text from User: " + msgText);
         
-//        JSONObject jResponse = new JSONObject();
-//        try {
-//            jResponse = getMovieData(msgText);
-//            String moviePlot = jResponse.getString("Plot");
-//            String posterURL = jResponse.getString("Poster");
-//            replyToUser(reply_token, moviePlot, posterURL);
-//            pushToUser();
+        JSONObject jResponse = new JSONObject();
+        try {
+            jResponse = getMovieData(msgText);
+            String moviePlot = jResponse.getString("Plot");
+            String posterURL = jResponse.getString("Poster");
+            replyToUser(reply_token, moviePlot, posterURL);
+            pushToUser();
 //            templateForUser(posterURL);
-//        } catch (IOException e) {
-//            System.out.println("Exception is raised ");
-//            e.printStackTrace();
-//        }
-//        catch(Exception e)
-//        {
-//            System.out.println("Unknown exception occurs");
-//        }
+            carouselForUser(posterURL);
+        } catch (IOException e) {
+            System.out.println("Exception is raised ");
+            e.printStackTrace();
+        }
+        catch(Exception e)
+        {
+            System.out.println("Unknown exception occurs");
+        }
         
 //        String fileURL = "https://api.line.me/v2/bot/message/" + messageId + "/content";
 //        String saveDir = "/User/line/Downloads";
@@ -122,19 +123,19 @@ public class LineBotController
 //            ex.printStackTrace();
 //        }
         
-        try {
-            if (!msgType.equals("text")){
-                getUserContent(msgId);
-                System.out.println("Get User Content function is called");
-            }
-        } catch (IOException e) {
-            System.out.println("Exception is raised ");
-            e.printStackTrace();
-        }
-        catch(Exception e)
-        {
-            System.out.println("Unknown exception occurs");
-        }
+//        try {
+//            if (!msgType.equals("text")){
+//                getUserContent(msgId);
+//                System.out.println("Get User Content function is called");
+//            }
+//        } catch (IOException e) {
+//            System.out.println("Exception is raised ");
+//            e.printStackTrace();
+//        }
+//        catch(Exception e)
+//        {
+//            System.out.println("Unknown exception occurs");
+//        }
         
         return new ResponseEntity<String>(HttpStatus.OK);
     }
