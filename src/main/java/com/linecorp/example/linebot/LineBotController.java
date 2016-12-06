@@ -44,6 +44,7 @@ import com.linecorp.bot.model.message.TextMessage;
 import com.linecorp.bot.model.message.TemplateMessage;
 import com.linecorp.bot.model.message.VideoMessage;
 import com.linecorp.bot.model.message.ImageMessage;
+import com.linecorp.bot.model.message.template.CarouselTemplate;
 import com.linecorp.bot.model.message.template.ButtonsTemplate;
 import com.linecorp.bot.model.response.BotApiResponse;
 import com.linecorp.bot.client.LineSignatureValidator;
@@ -210,6 +211,20 @@ public class LineBotController
                                 new MessageAction("Say message","Rice=米")));
         TemplateMessage templateMessage = new TemplateMessage("Button alt text", buttonsTemplate);
         PushMessage pushMessage = new PushMessage("Uc8d3ada05b0c56e1e0f73b53064d6171",templateMessage);
+        Response<BotApiResponse> response = LineMessagingServiceBuilder
+            .create(CHANNEL_ACCESS_TOKEN)
+            .build()
+            .pushMessage(pushMessage)
+            .execute();
+        System.out.println(response.code() + " " + response.message());
+    }
+    
+    private void carouselForUser(String poster_url) throws IOException{
+        CarouselTemplate carouselTemplate = new CarouselTemplate(
+                    Arrays.asList(new CarouselColumn
+                                    (imageUrl, "hoge", "fuga", Arrays.asList(new URIAction("Go to line.me", "https://line.me"), new PostbackAction("Say hello1", "hello こんにちは"))),
+                                  new CarouselColumn(imageUrl, "hoge", "fuga", Arrays.asList(new PostbackAction("言 hello2", "hello こんにちは", "hello こんにちは"), new MessageAction("Say message", "Rice=米")))));
+        TemplateMessage templateMessage = new TemplateMessage("Carousel alt text", carouselTemplate);
         Response<BotApiResponse> response = LineMessagingServiceBuilder
             .create(CHANNEL_ACCESS_TOKEN)
             .build()
