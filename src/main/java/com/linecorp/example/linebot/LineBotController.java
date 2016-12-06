@@ -112,13 +112,13 @@ public class LineBotController
 //            System.out.println("Unknown exception occurs");
 //        }
         
-        String fileURL = "https://api.line.me/v2/bot/message/" + msgId + "/content";
-        String saveDir = "/User/line/Downloads";
-        try {
-            HttpDownloadUtility.downloadFile(fileURL, saveDir, CHANNEL_ACCESS_TOKEN);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
+//        String fileURL = "https://api.line.me/v2/bot/message/" + messageId + "/content";
+//        String saveDir = "/User/line/Downloads";
+//        try {
+//            HttpDownloadUtility.downloadFile(fileURL, saveDir, CHANNEL_ACCESS_TOKEN);
+//        } catch (IOException ex) {
+//            ex.printStackTrace();
+//        }
         
         try {
             if (!msgType.equals("text")){
@@ -223,13 +223,12 @@ public class LineBotController
                 .build()
                 .getMessageContent(messageId)
                 .execute();
+        System.out.println("Success:" + response.isSuccessful());
         if (response.isSuccessful()) {
             ResponseBody content = response.body();
             Files.copy(content.byteStream(),Files.createTempFile("foo", "bar"));
         } else {
             System.out.println(response.code() + " " + response.message());
         }
-//        System.out.println("Got content-type: {}", content.contentType());
-        
     }
 }
