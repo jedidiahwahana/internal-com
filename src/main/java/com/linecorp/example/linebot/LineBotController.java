@@ -103,6 +103,16 @@ public class LineBotController
 //            replyToUser(reply_token, moviePlot, posterURL);
 //            pushToUser();
             templateForUser(posterURL);
+        } catch (IOException e) {
+            System.out.println("Exception is raised ");
+            e.printStackTrace();
+        }
+        catch(Exception e)
+        {
+            System.out.println("Unknown exception occurs");
+        }
+        
+        try {
             if (!msgType.equals("text")){
                 getUserContent(msgId);
                 System.out.println("Get User Content function is called");
