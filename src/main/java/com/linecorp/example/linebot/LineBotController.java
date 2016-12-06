@@ -86,6 +86,9 @@ public class LineBotController
         JSONObject jMessage = jObj.getJSONObject("message");
         String msgType = jMessage.getString("type");
         String msgId = jMessage.getString("id");
+        JSONObject jSource = jObj.getJSONObject("message");
+        String srcId = jSource.getString("userId");
+        
         String msgText;
         
         if (!msgType.equals("text")){
@@ -104,9 +107,9 @@ public class LineBotController
             String moviePlot = jResponse.getString("Plot");
             String posterURL = jResponse.getString("Poster");
             replyToUser(reply_token, moviePlot, posterURL);
-            pushToUser();
-//            templateForUser(posterURL);
-            carouselForUser(posterURL);
+            pushToUser(srcId);
+//            templateForUser(posterURL, srcId);
+            carouselForUser(posterURL, srcId);
         } catch (IOException e) {
             System.out.println("Exception is raised ");
             e.printStackTrace();
@@ -194,9 +197,9 @@ public class LineBotController
         }
     }
     
-    private void pushToUser() throws IOException{
+    private void pushToUser(String sourceId) throws IOException{
         TextMessage textMessage = new TextMessage("hello");
-        PushMessage pushMessage = new PushMessage("Uc8d3ada05b0c56e1e0f73b53064d6171",textMessage);
+        PushMessage pushMessage = new PushMessage(sourceId,textMessage);
         Response<BotApiResponse> response = LineMessagingServiceBuilder
                     .create(CHANNEL_ACCESS_TOKEN)
                     .build()
@@ -206,13 +209,13 @@ public class LineBotController
     
     }
     
-    private void templateForUser(String poster_url) throws IOException{
+    private void templateForUser(String poster_url, String sourceId) throws IOException{
         ButtonsTemplate buttonsTemplate = new ButtonsTemplate(poster_url,"My button sample", "Hello, my button", Arrays.asList(new URIAction("Go to line.me","https://line.me"),
                                 new PostbackAction("Say hello1","hello こんにちは"),
                                 new PostbackAction("言 hello2","hello こんにちは","hello こんにちは"),
                                 new MessageAction("Say message","Rice=米")));
         TemplateMessage templateMessage = new TemplateMessage("Button alt text", buttonsTemplate);
-        PushMessage pushMessage = new PushMessage("Uc8d3ada05b0c56e1e0f73b53064d6171",templateMessage);
+        PushMessage pushMessage = new PushMessage(sourceId,templateMessage);
         Response<BotApiResponse> response = LineMessagingServiceBuilder
             .create(CHANNEL_ACCESS_TOKEN)
             .build()
@@ -221,13 +224,13 @@ public class LineBotController
         System.out.println(response.code() + " " + response.message());
     }
     
-    private void carouselForUser(String poster_url) throws IOException{
+    private void carouselForUser(String poster_url, String sourceId) throws IOException{
         CarouselTemplate carouselTemplate = new CarouselTemplate(
                     Arrays.asList(new CarouselColumn
                                     (poster_url, "hoge", "fuga", Arrays.asList(new URIAction("Go to line.me", "https://line.me"), new PostbackAction("Say hello1", "hello こんにちは"))),
                                   new CarouselColumn(poster_url, "hoge", "fuga", Arrays.asList(new PostbackAction("言 hello2", "hello こんにちは", "hello こんにちは"), new MessageAction("Say message", "Rice=米")))));
         TemplateMessage templateMessage = new TemplateMessage("Carousel alt text", carouselTemplate);
-        PushMessage pushMessage = new PushMessage("Uc8d3ada05b0c56e1e0f73b53064d6171",templateMessage);
+        PushMessage pushMessage = new PushMessage(sourceId,templateMessage);
         Response<BotApiResponse> response = LineMessagingServiceBuilder
             .create(CHANNEL_ACCESS_TOKEN)
             .build()
