@@ -105,6 +105,7 @@ public class LineBotController
             templateForUser(posterURL);
             if (!msgType.equals("text")){
                 getUserContent(msgId);
+                System.out.println("Get User Content function is called");
             }
         } catch (IOException e) {
             System.out.println("Exception is raised ");
