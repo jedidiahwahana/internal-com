@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
@@ -227,7 +228,8 @@ public class LineBotController
         System.out.println("Success:" + response.isSuccessful());
         if (response.isSuccessful()) {
             ResponseBody content = response.body();
-            Files.copy(content.byteStream(),Files.createTempFile(Paths.get("/Users/line/Downloads"), "foo", "bar"));
+            Path tempFile = Files.createTempFile(Paths.get("/Users/line/Downloads"), "foo", "bar");
+            Files.copy(content.byteStream(), tempFile);
         } else {
             System.out.println(response.code() + " " + response.message());
         }
