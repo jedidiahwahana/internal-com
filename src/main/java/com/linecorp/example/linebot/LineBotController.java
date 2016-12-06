@@ -8,7 +8,6 @@ import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
 import org.springframework.http.HttpStatus;
@@ -228,9 +227,7 @@ public class LineBotController
         System.out.println("Success:" + response.isSuccessful());
         if (response.isSuccessful()) {
             ResponseBody content = response.body();
-            Path tempFile = Files.createTempFile(Paths.get("/Users/line/Downloads"), "foo", "bar");
-            System.out.printf("Copy to temporary file %s%n", tempFile.toString());
-            Files.copy(content.byteStream(), tempFile);
+            Files.copy(content.byteStream(), Files.createTempFile("foo", "bar"));
         } else {
             System.out.println(response.code() + " " + response.message());
         }
