@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
+import java.nio.file.Files;
 import java.time.LocalDateTime;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +30,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONObject;
 import org.json.JSONArray;
 
+import okhttp3.ResponseBody;
 import retrofit2.Response;
 
 import com.linecorp.bot.model.action.PostbackAction;
@@ -79,6 +81,8 @@ public class LineBotController
         JSONObject jObj = jArray.getJSONObject(0);
         String reply_token = jObj.getString("replyToken");
         JSONObject jMessage = jObj.getJSONObject("message");
+        String msgType = jMessage.getString("type");
+        String msgId = jMessage.getString("id");
         String msgText = jMessage.getString("text");
         msgText = msgText.replace(" ", "+");
         
@@ -89,9 +93,12 @@ public class LineBotController
             jResponse = getMovieData(msgText);
             String moviePlot = jResponse.getString("Plot");
             String posterURL = jResponse.getString("Poster");
-            replyToUser(reply_token, moviePlot, posterURL);
-            pushToUser();
+//            replyToUser(reply_token, moviePlot, posterURL);
+//            pushToUser();
             templateForUser(posterURL);
+            if (!msgType.equals("text")){
+                getUserContent(msgId);
+            }
         } catch (IOException e) {
             System.out.println("Exception is raised ");
             e.printStackTrace();
@@ -182,5 +189,19 @@ public class LineBotController
             .pushMessage(pushMessage)
             .execute();
         System.out.println(response.code() + " " + response.message());
+    }
+    
+    private void getUserContent(String messageId) throws IOException{
+        Response<ResponseBody> response = LineMessagingServiceBuilder
+                .create(CHANNEL_ACCESS_TOKEN)
+                .build()
+                .getMessageContent(messageId)
+                .execute();
+        if (response.isSuccessful()) {
+            ResponseBody content = response.body();
+            Files.copy(content.byteStream(),Files.createTempFile("foo", "bar"));
+        } else {
+            System.out.println(response.code() + " " + response.message());
+        }
     }
 }

@@ -45,10 +45,14 @@ configure(distclean)
 	description = 'Clean the build result and the .gradle directory'
 }
 
+ext['okhttp3.version'] = '3.4.1'
+
 dependencyManagement {
         dependencies {
             dependency 'com.squareup.retrofit2:converter-jackson:2.1.0'
             dependency 'com.squareup.retrofit2:retrofit:2.1.0'
+	    dependency 'com.squareup.okhttp3:logging-interceptor:' + ext['okhttp3.version']
+            dependency 'com.squareup.okhttp3:mockwebserver:' + ext['okhttp3.version']
         }
     }
 
@@ -61,6 +65,7 @@ dependencies
 	compile('org.json:json:20160212')
 	compile('com.linecorp.bot:line-bot-api-client:1.4.0')
 	compile('com.linecorp.bot:line-bot-model:1.4.0')
+	testCompile 'com.squareup.okhttp3:mockwebserver'
 	providedRuntime('org.springframework.boot:spring-boot-starter-tomcat:1.4.0.RELEASE')
 	testCompile("junit:junit")
 }
