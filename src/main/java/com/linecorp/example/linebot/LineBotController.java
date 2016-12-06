@@ -223,8 +223,8 @@ public class LineBotController
     private void carouselForUser(String poster_url) throws IOException{
         CarouselTemplate carouselTemplate = new CarouselTemplate(
                     Arrays.asList(new CarouselColumn
-                                    (imageUrl, "hoge", "fuga", Arrays.asList(new URIAction("Go to line.me", "https://line.me"), new PostbackAction("Say hello1", "hello こんにちは"))),
-                                  new CarouselColumn(imageUrl, "hoge", "fuga", Arrays.asList(new PostbackAction("言 hello2", "hello こんにちは", "hello こんにちは"), new MessageAction("Say message", "Rice=米")))));
+                                    (poster_url, "hoge", "fuga", Arrays.asList(new URIAction("Go to line.me", "https://line.me"), new PostbackAction("Say hello1", "hello こんにちは"))),
+                                  new CarouselColumn(poster_url, "hoge", "fuga", Arrays.asList(new PostbackAction("言 hello2", "hello こんにちは", "hello こんにちは"), new MessageAction("Say message", "Rice=米")))));
         TemplateMessage templateMessage = new TemplateMessage("Carousel alt text", carouselTemplate);
         Response<BotApiResponse> response = LineMessagingServiceBuilder
             .create(CHANNEL_ACCESS_TOKEN)
