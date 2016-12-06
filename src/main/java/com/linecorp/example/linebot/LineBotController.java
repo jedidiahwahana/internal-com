@@ -226,6 +226,7 @@ public class LineBotController
                                     (poster_url, "hoge", "fuga", Arrays.asList(new URIAction("Go to line.me", "https://line.me"), new PostbackAction("Say hello1", "hello こんにちは"))),
                                   new CarouselColumn(poster_url, "hoge", "fuga", Arrays.asList(new PostbackAction("言 hello2", "hello こんにちは", "hello こんにちは"), new MessageAction("Say message", "Rice=米")))));
         TemplateMessage templateMessage = new TemplateMessage("Carousel alt text", carouselTemplate);
+        PushMessage pushMessage = new PushMessage("Uc8d3ada05b0c56e1e0f73b53064d6171",templateMessage);
         Response<BotApiResponse> response = LineMessagingServiceBuilder
             .create(CHANNEL_ACCESS_TOKEN)
             .build()
