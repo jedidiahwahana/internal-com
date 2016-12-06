@@ -83,7 +83,14 @@ public class LineBotController
         JSONObject jMessage = jObj.getJSONObject("message");
         String msgType = jMessage.getString("type");
         String msgId = jMessage.getString("id");
-        String msgText = jMessage.getString("text");
+        String msgText;
+        
+        if (!msgType.equals("text")){
+            msgText = " ";
+        } else {
+            msgText = jMessage.getString("text");
+        }
+        
         msgText = msgText.replace(" ", "+");
         
         System.out.println("Text from User: " + msgText);
