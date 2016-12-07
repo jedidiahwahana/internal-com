@@ -99,6 +99,7 @@ public class LineBotController
         String mAwards = " ";
         String mActors = " ";
         String mPoster = " ";
+        String mTitle = " ";
         JSONObject mJSON = new JSONObject();
         
         //Parsing message from user
@@ -117,6 +118,7 @@ public class LineBotController
                 mAwards = mJSON.getString("Awards");
                 mActors = mJSON.getString("Actors");
                 mPoster = mJSON.getString("Poster");
+                mTitle = mJSON.getString("Title");
             } catch (IOException e) {
                 System.out.println("Exception is raised ");
                 e.printStackTrace();
@@ -144,7 +146,7 @@ public class LineBotController
         } else if (msgText.contains("actors")){
             msgToUser = "Actors: " + mActors;
         } else if (msgText.contains("carousel")){
-            carouselForUser(mPoster, srcId, msgText);
+            carouselForUser(mPoster, srcId, mTitle);
         }
         
         replyToUser(reply_token, msgToUser);
@@ -244,12 +246,10 @@ public class LineBotController
                                     (poster_url, title, "Select one for more info", Arrays.asList
                                         (new MessageAction("Full Data", "Title \"" + title + "\""),
                                          new MessageAction("Summary", "Plot \"" + title + "\""),
-                                         new MessageAction("Released Date", "Released \"" + title + "\""),
                                          new MessageAction("Poster", "Poster \"" + title + "\""))),
                                   new CarouselColumn
                                     (poster_url, title, "Select one for more info", Arrays.asList
-                                        (new MessageAction("Director", "Director \"" + title + "\""),
-                                         new MessageAction("Writer", "Writer \"" + title + "\""),
+                                        (new MessageAction("Released Date", "Released \"" + title + "\""),
                                          new MessageAction("Actors", "Actors \"" + title + "\""),
                                          new MessageAction("Awards", "Awards \"" + title + "\"")))));
         TemplateMessage templateMessage = new TemplateMessage("Your search result", carouselTemplate);
