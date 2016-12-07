@@ -156,7 +156,7 @@ public class LineBotController
         
         System.out.println("OMDb responses: " + msgToUser);
         
-        if (msgToUser.length() <= 10){
+        if (msgToUser.length() <= 11){
             replyToUser(reply_token, "Request Timeout");
         } else {
             replyToUser(reply_token, msgToUser);
