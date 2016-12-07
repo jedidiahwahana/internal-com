@@ -179,6 +179,7 @@ public class LineBotController
         HttpGet get = new HttpGet(URI);
         
         HttpResponse responseGet = c.execute(get);
+        System.out.println("HTTP executed");
         
         // Get the response from the GET request
         BufferedReader brd = new BufferedReader(new InputStreamReader(responseGet.getEntity().getContent()));
@@ -188,6 +189,7 @@ public class LineBotController
         while ((lineGet = brd.readLine()) != null) {
             resultGet.append(lineGet);
         }
+        System.out.println("Got result");
         
         // Change type of resultGet to JSONObject
         JSONObject jObjGet = new JSONObject(resultGet.toString());
