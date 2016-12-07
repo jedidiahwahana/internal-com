@@ -10,6 +10,7 @@ import java.util.List;
 import java.nio.file.Path;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
+import java.sql.SQLException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -52,6 +53,9 @@ import com.linecorp.bot.model.response.BotApiResponse;
 import com.linecorp.bot.client.LineSignatureValidator;
 import com.linecorp.bot.client.LineMessagingServiceBuilder;
 
+import com.linecorp.example.linebot.db.DbContract;
+import com.linecorp.example.linebot.db.PostgresHelper;
+
 @RestController
 @RequestMapping(value="/linebot")
 public class LineBotController
@@ -61,6 +65,8 @@ public class LineBotController
                                         .setConnectionRequestTimeout(5 * 1000)
                                         .setSocketTimeout(5 * 1000).build();
     CloseableHttpClient c = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).build();
+    PostgresHelper client = new PostgresHelper(DbContract.URL);
+    
     private static final String CHANNEL_SECRET = "caa222f011bb7e3b992540c00e94d763";
     private static final String CHANNEL_ACCESS_TOKEN = "i4iDYDwh7VEyNHSAMRMGjqFjlZbi9CNng34yVW+b6d2DIggg1WExUoZNIYqj749IsJC+nbEt1ciuqy/oHR2XkwYDqB/fC5jN6FHYM9F2MMcOQVQpIcAkyxUskdg8jTOP6g005lISkzpZRkoxTUcRGgdB04t89/1O/w1cDnyilFU=";
     
@@ -253,5 +259,36 @@ public class LineBotController
             System.out.println("Exception is raised ");
             e.printStackTrace();
         }
+    }
+    
+    private void getUserContent(String messageId){
+        try {
+            Response<ResponseBody> response = LineMessagingServiceBuilder
+            .create("CHANNEL_ACCESS_TOKEN")
+            .build()
+            .getMessageContent(messageId)
+            .execute();
+            if (response.isSuccessful()) {
+                ResponseBody content = response.body();
+                try {
+                    if (client.connect()) {
+                        System.out.println("DB connected");
+                        if (client.insert("files", messageId, content.byteStream()) == 1) {
+                            System.out.println("Record added");
+                        }
+                    }
+                    
+                } catch (ClassNotFoundException | SQLException e) {
+                    System.out.println("Exception is raised ");
+                    e.printStackTrace();
+                }
+            } else {
+                System.out.println(response.code() + " " + response.message());
+            }
+        } catch (IOException e) {
+            System.out.println("Exception is raised ");
+            e.printStackTrace();
+        }
+        
     }
 }
