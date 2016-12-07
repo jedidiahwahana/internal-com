@@ -154,21 +154,13 @@ public class LineBotController
             carouselForUser(mPoster, srcId, mTitle);
         }
         
-//        replyToUser(reply_token, msgToUser);
-        
         System.out.println("OMDb responses: " + msgToUser);
-        replyToUser(reply_token, "Hello");
         
-//        try {
-////            templateForUser(mPoster, srcId);
-//        } catch (IOException e) {
-//            System.out.println("Exception is raised ");
-//            e.printStackTrace();
-//        }
-//        catch(Exception e)
-//        {
-//            System.out.println("Unknown exception occurs");
-//        }
+        if (msgToUser.length() <= 10){
+            replyToUser(reply_token, "Request Timeout");
+        } else {
+            replyToUser(reply_token, msgToUser);
+        }
          
         return new ResponseEntity<String>(HttpStatus.OK);
     }
@@ -234,21 +226,6 @@ public class LineBotController
             System.out.println("Exception is raised ");
             e.printStackTrace();
         }
-    }
-    
-    private void templateForUser(String poster_url, String sourceId) throws IOException{
-        ButtonsTemplate buttonsTemplate = new ButtonsTemplate(poster_url,"My button sample", "Hello, my button", Arrays.asList(new URIAction("Go to line.me","https://line.me"),
-                                new PostbackAction("Say hello1","hello こんにちは"),
-                                new PostbackAction("言 hello2","hello こんにちは","hello こんにちは"),
-                                new MessageAction("Say message","Rice=米")));
-        TemplateMessage templateMessage = new TemplateMessage("Button alt text", buttonsTemplate);
-        PushMessage pushMessage = new PushMessage(sourceId,templateMessage);
-        Response<BotApiResponse> response = LineMessagingServiceBuilder
-            .create(CHANNEL_ACCESS_TOKEN)
-            .build()
-            .pushMessage(pushMessage)
-            .execute();
-        System.out.println(response.code() + " " + response.message());
     }
     
     private void carouselForUser(String poster_url, String sourceId, String title){
