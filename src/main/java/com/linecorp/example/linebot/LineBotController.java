@@ -27,6 +27,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.client.config.RequestConfig;
 
 import org.json.JSONObject;
 import org.json.JSONArray;
@@ -55,7 +56,8 @@ import com.linecorp.bot.client.LineMessagingServiceBuilder;
 @RequestMapping(value="/linebot")
 public class LineBotController
 {
-    HttpClient c = HttpClientBuilder.create().build();
+    RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(5 * 1000).build();
+    HttpClient c = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).build();
     private static final String CHANNEL_SECRET = "caa222f011bb7e3b992540c00e94d763";
     private static final String CHANNEL_ACCESS_TOKEN = "i4iDYDwh7VEyNHSAMRMGjqFjlZbi9CNng34yVW+b6d2DIggg1WExUoZNIYqj749IsJC+nbEt1ciuqy/oHR2XkwYDqB/fC5jN6FHYM9F2MMcOQVQpIcAkyxUskdg8jTOP6g005lISkzpZRkoxTUcRGgdB04t89/1O/w1cDnyilFU=";
     
@@ -180,6 +182,7 @@ public class LineBotController
         
         HttpResponse responseGet = c.execute(get);
         System.out.println("HTTP executed");
+        System.out.println("HTTP Status of response: " + responseGet.getStatusLine().getStatusCode());
         
         // Get the response from the GET request
         BufferedReader brd = new BufferedReader(new InputStreamReader(responseGet.getEntity().getContent()));
