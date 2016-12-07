@@ -95,6 +95,9 @@ public class LineBotController
             msgText = " ";
         } else {
             msgText = jMessage.getString("text");
+            if (msgText.toLowerCase().contains("title"))
+                msgText = msgText.substring(msgText.indexOf("\"") + 1, msgText.lastIndexOf("\"") + 1);
+            System.out.println("Title from User: " + msgText);
         }
         
         msgText = msgText.replace(" ", "+");
