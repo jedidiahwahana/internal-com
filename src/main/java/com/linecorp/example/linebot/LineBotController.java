@@ -143,20 +143,22 @@ public class LineBotController
             msgToUser = "Awards: " + mAwards;
         } else if (msgText.contains("actors")){
             msgToUser = "Actors: " + mActors;
+        } else if (msgText.contains("carousel")){
+            carouselForUser(mPoster, srcId, msgText);
         }
         
-        try {
-            replyToUser(reply_token, msgToUser);
-//            templateForUser(mPoster, srcId);
-//            carouselForUser(mPoster, srcId);
-        } catch (IOException e) {
-            System.out.println("Exception is raised ");
-            e.printStackTrace();
-        }
-        catch(Exception e)
-        {
-            System.out.println("Unknown exception occurs");
-        }
+        replyToUser(reply_token, msgToUser);
+        
+//        try {
+////            templateForUser(mPoster, srcId);
+//        } catch (IOException e) {
+//            System.out.println("Exception is raised ");
+//            e.printStackTrace();
+//        }
+//        catch(Exception e)
+//        {
+//            System.out.println("Unknown exception occurs");
+//        }
         
         return new ResponseEntity<String>(HttpStatus.OK);
     }
@@ -189,21 +191,25 @@ public class LineBotController
         return jObjGet;
     }
     
-    private void replyToUser(String rToken, String messageToUser) throws IOException{
+    private void replyToUser(String rToken, String messageToUser){
         TextMessage textMessage = new TextMessage(messageToUser);
         ReplyMessage replyMessage = new ReplyMessage(rToken, textMessage);
-        Response<BotApiResponse> response = LineMessagingServiceBuilder
-            .create(CHANNEL_ACCESS_TOKEN)
-            .build()
-            .replyMessage(replyMessage)
-            .execute();
-        System.out.println("Reply Message: " + response.code() + " " + response.message());
+        try {
+            Response<BotApiResponse> response = LineMessagingServiceBuilder
+                .create(CHANNEL_ACCESS_TOKEN)
+                .build()
+                .replyMessage(replyMessage)
+                .execute();
+            System.out.println("Reply Message: " + response.code() + " " + response.message());
+        } catch (IOException e) {
+            System.out.println("Exception is raised ");
+            e.printStackTrace();
+        }
     }
     
     private void pushPoster(String sourceId, String poster_url){
         ImageMessage imageMessage = new ImageMessage(poster_url, poster_url);
         PushMessage pushMessage = new PushMessage(sourceId,imageMessage);
-        
         try {
             Response<BotApiResponse> response = LineMessagingServiceBuilder
                 .create(CHANNEL_ACCESS_TOKEN)
@@ -232,18 +238,32 @@ public class LineBotController
         System.out.println(response.code() + " " + response.message());
     }
     
-    private void carouselForUser(String poster_url, String sourceId) throws IOException{
+    private void carouselForUser(String poster_url, String sourceId, String title){
         CarouselTemplate carouselTemplate = new CarouselTemplate(
                     Arrays.asList(new CarouselColumn
-                                    (poster_url, "hoge", "fuga", Arrays.asList(new URIAction("Go to line.me", "https://line.me"), new PostbackAction("Say hello1", "hello こんにちは"))),
-                                  new CarouselColumn(poster_url, "hoge", "fuga", Arrays.asList(new PostbackAction("Next", "Rambo", "You search for Rambo"), new MessageAction("Say message", "Rice=米")))));
-        TemplateMessage templateMessage = new TemplateMessage("Carousel alt text", carouselTemplate);
+                                    (poster_url, title, "Select one for more info", Arrays.asList
+                                        (new MessageAction("Full Data", "Title \"" + title + "\""),
+                                         new MessageAction("Summary", "Plot \"" + title + "\""),
+                                         new MessageAction("Released Date", "Released \"" + title + "\""),
+                                         new MessageAction("Poster", "Poster \"" + title + "\""))),
+                                  new CarouselColumn
+                                    (poster_url, title, "Select one for more info", Arrays.asList
+                                        (new MessageAction("Director", "Director \"" + title + "\""),
+                                         new MessageAction("Writer", "Writer \"" + title + "\""),
+                                         new MessageAction("Actors", "Actors \"" + title + "\""),
+                                         new MessageAction("Awards", "Awards \"" + title + "\"")))));
+        TemplateMessage templateMessage = new TemplateMessage("Your search result", carouselTemplate);
         PushMessage pushMessage = new PushMessage(sourceId,templateMessage);
-        Response<BotApiResponse> response = LineMessagingServiceBuilder
-            .create(CHANNEL_ACCESS_TOKEN)
-            .build()
-            .pushMessage(pushMessage)
-            .execute();
-        System.out.println(response.code() + " " + response.message());
+        try {
+            Response<BotApiResponse> response = LineMessagingServiceBuilder
+                .create(CHANNEL_ACCESS_TOKEN)
+                .build()
+                .pushMessage(pushMessage)
+                .execute();
+            System.out.println(response.code() + " " + response.message());
+        } catch (IOException e) {
+            System.out.println("Exception is raised ");
+            e.printStackTrace();
+        }
     }
 }
