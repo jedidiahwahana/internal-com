@@ -98,6 +98,7 @@ public class LineBotController
         String mWriter = " ";
         String mAwards = " ";
         String mActors = " ";
+        String mPoster = " ";
         JSONObject mJSON = new JSONObject();
         
         //Parsing message from user
@@ -115,6 +116,7 @@ public class LineBotController
                 mWriter = mJSON.getString("Writer");
                 mAwards = mJSON.getString("Awards");
                 mActors = mJSON.getString("Actors");
+                mPoster = mJSON.getString("Poster");
             } catch (IOException e) {
                 System.out.println("Exception is raised ");
                 e.printStackTrace();
@@ -126,23 +128,25 @@ public class LineBotController
         //Check user request
         if (msgText.contains("title")){
             msgToUser = "Plot: " + mPlot + "\nReleased: " + mReleased + "\nDirector: " + mDirector + "\nWriter: " + mWriter + "\nAwards: " + mAwards + "\nActors: " + mActors;
+            pushPoster(srcId, mPoster);
+        } else if (msgText.contains("plot")){
+            msgToUser = "Plot: " + mPlot;
+        } else if (msgText.contains("released")){
+            msgToUser = "Released: " + mReleased;
+        } else if (msgText.contains("poster")){
+            pushPoster(srcId, mPoster);
+        } else if (msgText.contains("director")){
+            msgToUser = "Director: " + mDirector;
+        } else if (msgText.contains("writer")){
+            msgToUser = "Writer: " + mWriter;
+        } else if (msgText.contains("awards")){
+            msgToUser = "Awards: " + mAwards;
+        } else if (msgText.contains("actors")){
+            msgToUser = "Actors: " + mActors;
         }
         
-//        switch (msgText){
-//            case msgText.contains("title") :
-//                msgToUser = "Plot: " + mPlot + "\nReleased: " + mReleased + "\nDirector: " + mDirector + "\nWriter: " + mWriter + "\nAwards: " + mAwards + "\nActors: " + mActors;
-//            case msgText.contains("plot") :
-//            case msgText.contains("released") :
-//            case msgText.contains("poster") :
-//            case msgText.contains("director") :
-//            case msgText.contains("writer") :
-//            case msgText.contains("awards") :
-//            case msgText.contains("actors") :
-//        }
-        
         try {
-//            replyToUser(reply_token, mPlot, mPoster);
-            pushToUser(srcId, msgToUser);
+            replyToUser(reply_token, msgToUser);
 //            templateForUser(mPoster, srcId);
 //            carouselForUser(mPoster, srcId);
         } catch (IOException e) {
@@ -153,28 +157,6 @@ public class LineBotController
         {
             System.out.println("Unknown exception occurs");
         }
-        
-//        String fileURL = "https://api.line.me/v2/bot/message/" + messageId + "/content";
-//        String saveDir = "/User/line/Downloads";
-//        try {
-//            HttpDownloadUtility.downloadFile(fileURL, saveDir, CHANNEL_ACCESS_TOKEN);
-//        } catch (IOException ex) {
-//            ex.printStackTrace();
-//        }
-        
-//        try {
-//            if (!msgType.equals("text")){
-//                getUserContent(msgId);
-//                System.out.println("Get User Content function is called");
-//            }
-//        } catch (IOException e) {
-//            System.out.println("Exception is raised ");
-//            e.printStackTrace();
-//        }
-//        catch(Exception e)
-//        {
-//            System.out.println("Unknown exception occurs");
-//        }
         
         return new ResponseEntity<String>(HttpStatus.OK);
     }
@@ -207,44 +189,32 @@ public class LineBotController
         return jObjGet;
     }
     
-    private void replyToUser(String rToken, String movie_plot, String poster_url) throws IOException{
-        
-        TextMessage textMessage = new TextMessage(movie_plot);
+    private void replyToUser(String rToken, String messageToUser) throws IOException{
+        TextMessage textMessage = new TextMessage(messageToUser);
+        ReplyMessage replyMessage = new ReplyMessage(rToken, textMessage);
+        Response<BotApiResponse> response = LineMessagingServiceBuilder
+            .create(CHANNEL_ACCESS_TOKEN)
+            .build()
+            .replyMessage(replyMessage)
+            .execute();
+        System.out.println("Reply Message: " + response.code() + " " + response.message());
+    }
+    
+    private void pushPoster(String sourceId, String poster_url){
         ImageMessage imageMessage = new ImageMessage(poster_url, poster_url);
-        
-        List<Message> allMessage = new ArrayList<Message>();
-        allMessage.add(textMessage);
-        allMessage.add(imageMessage);
-        
-        ReplyMessage replyMessage = new ReplyMessage(rToken, allMessage);
+        PushMessage pushMessage = new PushMessage(sourceId,imageMessage);
         
         try {
             Response<BotApiResponse> response = LineMessagingServiceBuilder
                 .create(CHANNEL_ACCESS_TOKEN)
                 .build()
-                .replyMessage(replyMessage)
+                .pushMessage(pushMessage)
                 .execute();
-            System.out.println("Reply Message: " + response.code() + " " + response.message());
+            System.out.println(response.code() + " " + response.message());
         } catch (IOException e) {
             System.out.println("Exception is raised ");
             e.printStackTrace();
         }
-        catch(Exception e)
-        {
-            System.out.println("Unknown exception occurs");
-        }
-    }
-    
-    private void pushToUser(String sourceId, String messageToUser) throws IOException{
-        TextMessage textMessage = new TextMessage(messageToUser);
-        PushMessage pushMessage = new PushMessage(sourceId,textMessage);
-        Response<BotApiResponse> response = LineMessagingServiceBuilder
-                    .create(CHANNEL_ACCESS_TOKEN)
-                    .build()
-                    .pushMessage(pushMessage)
-                    .execute();
-        System.out.println(response.code() + " " + response.message());
-    
     }
     
     private void templateForUser(String poster_url, String sourceId) throws IOException{
@@ -275,20 +245,5 @@ public class LineBotController
             .pushMessage(pushMessage)
             .execute();
         System.out.println(response.code() + " " + response.message());
-    }
-    
-    private void getUserContent(String messageId) throws IOException{
-        Response<ResponseBody> response = LineMessagingServiceBuilder
-                .create(CHANNEL_ACCESS_TOKEN)
-                .build()
-                .getMessageContent(messageId)
-                .execute();
-        System.out.println("Success:" + response.isSuccessful());
-        if (response.isSuccessful()) {
-            ResponseBody content = response.body();
-            Files.copy(content.byteStream(), Files.createTempFile("foo", "bar"));
-        } else {
-            System.out.println(response.code() + " " + response.message());
-        }
     }
 }
