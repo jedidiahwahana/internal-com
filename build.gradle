@@ -65,6 +65,7 @@ dependencies
 	compile('org.json:json:20160212')
 	compile('com.linecorp.bot:line-bot-api-client:1.4.0')
 	compile('com.linecorp.bot:line-bot-model:1.4.0')
+	compile('org.postgresql:postgresql:9.4.1212.jre7')
 	testCompile 'com.squareup.okhttp3:mockwebserver'
 	providedRuntime('org.springframework.boot:spring-boot-starter-tomcat:1.4.0.RELEASE')
 	testCompile("junit:junit")
