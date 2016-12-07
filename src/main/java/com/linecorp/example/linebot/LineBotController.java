@@ -74,8 +74,6 @@ public class LineBotController
         
         System.out.println("The signature is: " + (valid ? "valid" : "tidak valid"));
         
-        return
-        
         //Get events from source
         if(aPayload!=null && aPayload.length() > 0)
         {
@@ -108,10 +106,10 @@ public class LineBotController
         if (!msgType.equals("text")){
             msgText = " ";
         } else {
+            //Get movie data from OMDb API
             replyToUser(reply_token, "Helloooo!");
             return new ResponseEntity<String>(HttpStatus.OK);
             
-            //Get movie data from OMDb API
 //            msgText = jMessage.getString("text");
 //            msgText = msgText.toLowerCase();
 //            try {
@@ -130,6 +128,7 @@ public class LineBotController
 //            }
         }
         
+        /*
         String msgToUser = " ";
         
         //Check user request
@@ -166,7 +165,8 @@ public class LineBotController
 //        {
 //            System.out.println("Unknown exception occurs");
 //        }
-        
+        */
+         
         return new ResponseEntity<String>(HttpStatus.OK);
     }
     
