@@ -74,6 +74,8 @@ public class LineBotController
         
         System.out.println("The signature is: " + (valid ? "valid" : "tidak valid"));
         
+        return
+        
         //Get events from source
         if(aPayload!=null && aPayload.length() > 0)
         {
@@ -106,23 +108,26 @@ public class LineBotController
         if (!msgType.equals("text")){
             msgText = " ";
         } else {
+            replyToUser(reply_token, "Helloooo!");
+            return new ResponseEntity<String>(HttpStatus.OK);
+            
             //Get movie data from OMDb API
-            msgText = jMessage.getString("text");
-            msgText = msgText.toLowerCase();
-            try {
-                mJSON = getMovieData(msgText);
-                mPlot = mJSON.getString("Plot");
-                mReleased = mJSON.getString("Released");
-                mDirector = mJSON.getString("Director");
-                mWriter = mJSON.getString("Writer");
-                mAwards = mJSON.getString("Awards");
-                mActors = mJSON.getString("Actors");
-                mPoster = mJSON.getString("Poster");
-                mTitle = mJSON.getString("Title");
-            } catch (IOException e) {
-                System.out.println("Exception is raised ");
-                e.printStackTrace();
-            }
+//            msgText = jMessage.getString("text");
+//            msgText = msgText.toLowerCase();
+//            try {
+//                mJSON = getMovieData(msgText);
+//                mPlot = mJSON.getString("Plot");
+//                mReleased = mJSON.getString("Released");
+//                mDirector = mJSON.getString("Director");
+//                mWriter = mJSON.getString("Writer");
+//                mAwards = mJSON.getString("Awards");
+//                mActors = mJSON.getString("Actors");
+//                mPoster = mJSON.getString("Poster");
+//                mTitle = mJSON.getString("Title");
+//            } catch (IOException e) {
+//                System.out.println("Exception is raised ");
+//                e.printStackTrace();
+//            }
         }
         
         String msgToUser = " ";
