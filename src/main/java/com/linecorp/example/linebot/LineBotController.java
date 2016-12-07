@@ -107,28 +107,24 @@ public class LineBotController
             msgText = " ";
         } else {
             //Get movie data from OMDb API
-            replyToUser(reply_token, "Helloooo!");
-            return new ResponseEntity<String>(HttpStatus.OK);
-            
-//            msgText = jMessage.getString("text");
-//            msgText = msgText.toLowerCase();
-//            try {
-//                mJSON = getMovieData(msgText);
-//                mPlot = mJSON.getString("Plot");
-//                mReleased = mJSON.getString("Released");
-//                mDirector = mJSON.getString("Director");
-//                mWriter = mJSON.getString("Writer");
-//                mAwards = mJSON.getString("Awards");
-//                mActors = mJSON.getString("Actors");
-//                mPoster = mJSON.getString("Poster");
-//                mTitle = mJSON.getString("Title");
-//            } catch (IOException e) {
-//                System.out.println("Exception is raised ");
-//                e.printStackTrace();
-//            }
+            msgText = jMessage.getString("text");
+            msgText = msgText.toLowerCase();
+            try {
+                mJSON = getMovieData(msgText);
+                mPlot = mJSON.getString("Plot");
+                mReleased = mJSON.getString("Released");
+                mDirector = mJSON.getString("Director");
+                mWriter = mJSON.getString("Writer");
+                mAwards = mJSON.getString("Awards");
+                mActors = mJSON.getString("Actors");
+                mPoster = mJSON.getString("Poster");
+                mTitle = mJSON.getString("Title");
+            } catch (IOException e) {
+                System.out.println("Exception is raised ");
+                e.printStackTrace();
+            }
         }
         
-        /*
         String msgToUser = " ";
         
         //Check user request
@@ -153,7 +149,10 @@ public class LineBotController
             carouselForUser(mPoster, srcId, mTitle);
         }
         
-        replyToUser(reply_token, msgToUser);
+//        replyToUser(reply_token, msgToUser);
+        
+        System.out.println("OMDb responses: " + msgToUser);
+        replyToUser(reply_token, "Hello");
         
 //        try {
 ////            templateForUser(mPoster, srcId);
@@ -165,7 +164,6 @@ public class LineBotController
 //        {
 //            System.out.println("Unknown exception occurs");
 //        }
-        */
          
         return new ResponseEntity<String>(HttpStatus.OK);
     }
