@@ -38,7 +38,7 @@ public class PostgresHelper {
     
     public int insert(String table, String fileName, InputStream inputStream) throws SQLException {
         
-        PreparedStatement ps = conn.prepareStatement("INSERT INTO images VALUES (?, ?)");
+        PreparedStatement ps = conn.prepareStatement("INSERT INTO files VALUES (?, ?)");
         ps.setString(1, fileName);
         ps.setBinaryStream(2, inputStream);
         
