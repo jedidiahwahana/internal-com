@@ -74,11 +74,13 @@ public class LineBotController
         
         System.out.println("The signature is: " + (valid ? "valid" : "tidak valid"));
         
+        //Get events from source
         if(aPayload!=null && aPayload.length() > 0)
         {
             System.out.println("Payload: " + aPayload);
         }
         
+        //Parsing JSONObject from source
         JSONObject jObject = new JSONObject(aPayload);
         JSONArray jArray = jObject.getJSONArray("events");
         JSONObject jObj = jArray.getJSONObject(0);
@@ -89,30 +91,60 @@ public class LineBotController
         JSONObject jSource = jObj.getJSONObject("source");
         String srcId = jSource.getString("userId");
         
-        String msgText;
+        String msgText = " ";
+        String mPlot = " ";
+        String mReleased = " ";
+        String mDirector = " ";
+        String mWriter = " ";
+        String mAwards = " ";
+        String mActors = " ";
+        JSONObject mJSON = new JSONObject();
         
+        //Parsing message from user
         if (!msgType.equals("text")){
             msgText = " ";
         } else {
+            //Get movie data from OMDb API
             msgText = jMessage.getString("text");
-            if (msgText.toLowerCase().contains("title"))
-                msgText = msgText.substring(msgText.indexOf("\"") + 1, msgText.lastIndexOf("\""));
-            System.out.println("Title from User: " + msgText);
+            msgText = msgText.toLowerCase();
+            try {
+                mJSON = getMovieData(msgText);
+                mPlot = mJSON.getString("Plot");
+                mReleased = mJSON.getString("Released");
+                mDirector = mJSON.getString("Director");
+                mWriter = mJSON.getString("Writer");
+                mAwards = mJSON.getString("Awards");
+                mActors = mJSON.getString("Actors");
+            } catch (IOException e) {
+                System.out.println("Exception is raised ");
+                e.printStackTrace();
+            }
         }
         
-        msgText = msgText.replace(" ", "+");
+        String msgToUser = " ";
         
-        System.out.println("Text from User: " + msgText);
+        //Check user request
+        if (msgText.contains("title")){
+            msgToUser = "Plot: " + mPlot + "\nReleased: " + mReleased + "\nDirector: " + mDirector + "\nWriter: " + mWriter + "\nAwards: " + mAwards + "\nActors: " + mActors;
+        }
         
-        JSONObject jResponse = new JSONObject();
+//        switch (msgText){
+//            case msgText.contains("title") :
+//                msgToUser = "Plot: " + mPlot + "\nReleased: " + mReleased + "\nDirector: " + mDirector + "\nWriter: " + mWriter + "\nAwards: " + mAwards + "\nActors: " + mActors;
+//            case msgText.contains("plot") :
+//            case msgText.contains("released") :
+//            case msgText.contains("poster") :
+//            case msgText.contains("director") :
+//            case msgText.contains("writer") :
+//            case msgText.contains("awards") :
+//            case msgText.contains("actors") :
+//        }
+        
         try {
-            jResponse = getMovieData(msgText);
-            String moviePlot = jResponse.getString("Plot");
-            String posterURL = jResponse.getString("Poster");
-            replyToUser(reply_token, moviePlot, posterURL);
-            pushToUser(srcId);
-//            templateForUser(posterURL, srcId);
-            carouselForUser(posterURL, srcId);
+//            replyToUser(reply_token, mPlot, mPoster);
+            pushToUser(srcId, msgToUser);
+//            templateForUser(mPoster, srcId);
+//            carouselForUser(mPoster, srcId);
         } catch (IOException e) {
             System.out.println("Exception is raised ");
             e.printStackTrace();
@@ -148,8 +180,11 @@ public class LineBotController
     }
     
     private JSONObject getMovieData(String title) throws IOException{
-        // Act as client with GET method
+        title = title.substring(title.indexOf("\"") + 1, title.lastIndexOf("\""));
+        title = title.replace(" ", "+");
+        System.out.println("Text from User: " + title);
         
+        // Act as client with GET method
         String URI = "http://www.omdbapi.com/?t=" + title + "&r=json";
         
         HttpGet get = new HttpGet(URI);
@@ -200,8 +235,8 @@ public class LineBotController
         }
     }
     
-    private void pushToUser(String sourceId) throws IOException{
-        TextMessage textMessage = new TextMessage("hello");
+    private void pushToUser(String sourceId, String messageToUser) throws IOException{
+        TextMessage textMessage = new TextMessage(messageToUser);
         PushMessage pushMessage = new PushMessage(sourceId,textMessage);
         Response<BotApiResponse> response = LineMessagingServiceBuilder
                     .create(CHANNEL_ACCESS_TOKEN)
