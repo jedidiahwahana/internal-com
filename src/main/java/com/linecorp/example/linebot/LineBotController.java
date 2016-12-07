@@ -265,7 +265,7 @@ public class LineBotController
     private void getUserContent(String messageId){
         try {
             Response<ResponseBody> response = LineMessagingServiceBuilder
-            .create("CHANNEL_ACCESS_TOKEN")
+            .create(CHANNEL_ACCESS_TOKEN)
             .build()
             .getMessageContent(messageId)
             .execute();
