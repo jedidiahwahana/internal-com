@@ -67,8 +67,8 @@ public class LineBotController
     CloseableHttpClient c = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).build();
     PostgresHelper client = new PostgresHelper(DbContract.URL);
     
-    private static final String CHANNEL_SECRET = "caa222f011bb7e3b992540c00e94d763";
-    private static final String CHANNEL_ACCESS_TOKEN = "i4iDYDwh7VEyNHSAMRMGjqFjlZbi9CNng34yVW+b6d2DIggg1WExUoZNIYqj749IsJC+nbEt1ciuqy/oHR2XkwYDqB/fC5jN6FHYM9F2MMcOQVQpIcAkyxUskdg8jTOP6g005lISkzpZRkoxTUcRGgdB04t89/1O/w1cDnyilFU=";
+    private static final String CHANNEL_SECRET = "17ba02a5c5c2307b0f9579d52ec48c58";
+    private static final String CHANNEL_ACCESS_TOKEN = "3eb2RUEBHvOVQwBmD25oX8cjEDlIbzElCeVRNM2DeAXOLt8HV6dsSYcFDqtgNOtsCA8ylswoY2DEyeirTSNxrNKOTosCqEsS2ctLomVuy3KOCs8SB2BTwj8S3h5CYxnAkTnuT3pS2AxGaIvxHK7ofwdB04t89/1O/w1cDnyilFU=";
     
     @RequestMapping(value="/callback", method=RequestMethod.POST)
     public ResponseEntity<String> callback(
@@ -116,7 +116,7 @@ public class LineBotController
         //Parsing message from user
         if (!msgType.equals("text")){
             msgText = " ";
-            getUserContent(msgId);
+            getUserContent(msgId, srcId);
         } else {
             //Get movie data from OMDb API
             msgText = jMessage.getString("text");
@@ -262,19 +262,19 @@ public class LineBotController
         }
     }
     
-    private void getUserContent(String messageId){
+    private void getUserContent(String messageId, String source_id){
         try {
             Response<ResponseBody> response = LineMessagingServiceBuilder
-            .create(CHANNEL_ACCESS_TOKEN)
-            .build()
-            .getMessageContent(messageId)
-            .execute();
+                .create(CHANNEL_ACCESS_TOKEN)
+                .build()
+                .getMessageContent(messageId)
+                .execute();
             if (response.isSuccessful()) {
                 ResponseBody content = response.body();
                 try {
                     if (client.connect()) {
                         System.out.println("DB connected");
-                        if (client.insert("files", messageId, content.byteStream()) == 1) {
+                        if (client.insert("files", messageId, content.byteStream(), source_id) == 1) {
                             System.out.println("Record added");
                         }
                     }
@@ -290,6 +290,5 @@ public class LineBotController
             System.out.println("Exception is raised ");
             e.printStackTrace();
         }
-        
     }
 }
