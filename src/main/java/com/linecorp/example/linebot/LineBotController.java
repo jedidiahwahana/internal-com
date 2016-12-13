@@ -81,8 +81,8 @@ public class LineBotController
         try {
             BasicClient api = new BasicClient("8VAFVQ1GaQM7vVB0wELjxgWHdEp4o3", "0mvRsjtzPIZJW1ENktpz0ULOJcGgvZ");
             api.setApiUrl("https://app.smartfile.com");
-            String result = IOUtils.toString(api.get("/ping"));
-            System.out.println("Ping test:");
+            String result = IOUtils.toString(api.get("/whoami"));
+            System.out.println("Whoami test:");
             System.out.println(result);
         } catch (IOException | SmartFileException e) {
             System.out.println("Exception is raised ");
