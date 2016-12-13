@@ -78,18 +78,6 @@ public class LineBotController
         @RequestHeader("X-Line-Signature") String aXLineSignature,
         @RequestBody String aPayload)
     {
-        try {
-            BasicClient api = new BasicClient("8VAFVQ1GaQM7vVB0wELjxgWHdEp4o3", "0mvRsjtzPIZJW1ENktpz0ULOJcGgvZ");
-            api.setApiUrl("https://app.smartfile.com");
-            String result = IOUtils.toString(api.get("/whoami"));
-            System.out.println("Whoami test:");
-            System.out.println(result);
-        } catch (IOException | SmartFileException e) {
-            System.out.println("Exception is raised ");
-            e.printStackTrace();
-        }
-        
-        
         // compose body
         final String text=String.format("The Signature is: %s",
             (aXLineSignature!=null && aXLineSignature.length() > 0) ? aXLineSignature : "N/A");
@@ -117,6 +105,7 @@ public class LineBotController
         JSONObject jSource = jObj.getJSONObject("source");
         String srcId = jSource.getString("userId");
         
+        //Variable initialization
         String msgText = " ";
         String mPlot = " ";
         String mReleased = " ";
@@ -126,6 +115,7 @@ public class LineBotController
         String mActors = " ";
         String mPoster = " ";
         String mTitle = " ";
+        int cLength = 0;
         JSONObject mJSON = new JSONObject();
         
         //Parsing message from user
@@ -150,6 +140,32 @@ public class LineBotController
                 System.out.println("Exception is raised ");
                 e.printStackTrace();
             }
+        }
+        
+        try {
+            BasicClient api = new BasicClient("8VAFVQ1GaQM7vVB0wELjxgWHdEp4o3", "0mvRsjtzPIZJW1ENktpz0ULOJcGgvZ");
+            api.setApiUrl("https://app.smartfile.com");
+//            String result = IOUtils.toString(api.get("/whoami"));
+//            System.out.println("Whoami test:");
+//            System.out.println(result);
+            HttpPost post = new HttpPost("https://app.smartfile.com/api/2/path/oper/import/");
+            post.setHeader("Content-type", "application/x-www-form-urlencoded");
+//            post.setHeader("Content-Length", Integer.toString(cLength));
+            List<NameValuePair> content = new ArrayList<NameValuePair>();
+            content.add(new BasicNameValuePair("url", "https://api.line.me/v2/bot/message/" + msgId + "/content"));
+            post.setEntity(new UrlEncodedFormEntity(content));
+            HttpResponse response = c.execute(post);
+            BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+            StringBuffer postResult = new StringBuffer();
+            String line = "";
+            while ((line = rd.readLine()) != null)
+            {
+                postResult.append(line);
+            }
+            System.out.println(postResult.toString());
+        } catch (IOException | SmartFileException e) {
+            System.out.println("Exception is raised ");
+            e.printStackTrace();
         }
         
         String msgToUser = " ";
@@ -278,6 +294,7 @@ public class LineBotController
     }
     
     private void getUserContent(String messageId, String source_id){
+//        int bLength = 0;
         try {
             Response<ResponseBody> response = LineMessagingServiceBuilder
                 .create(CHANNEL_ACCESS_TOKEN)
@@ -286,6 +303,7 @@ public class LineBotController
                 .execute();
             if (response.isSuccessful()) {
                 ResponseBody content = response.body();
+//                bLength = content.byteStream().getSize();
                 try {
                     if (client.connect()) {
                         System.out.println("DB connected");
@@ -305,5 +323,6 @@ public class LineBotController
             System.out.println("Exception is raised ");
             e.printStackTrace();
         }
+//        return bLength;
     }
 }
