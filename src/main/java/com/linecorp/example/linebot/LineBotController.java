@@ -4,6 +4,7 @@ package com.linecorp.example.linebot;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Map;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
@@ -57,7 +58,8 @@ import com.linecorp.bot.client.LineMessagingServiceBuilder;
 import com.linecorp.example.linebot.db.DbContract;
 import com.linecorp.example.linebot.db.PostgresHelper;
 
-import com.smartfile.api.*;
+import com.cloudinary.*;
+import com.cloudinary.utils.ObjectUtils;
 
 @RestController
 @RequestMapping(value="/linebot")
@@ -69,6 +71,11 @@ public class LineBotController
                                         .setSocketTimeout(5 * 1000).build();
     CloseableHttpClient c = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).build();
     PostgresHelper client = new PostgresHelper(DbContract.URL);
+    
+    Cloudinary cloudinary = new Cloudinary(ObjectUtils.asMap(
+                                                             "cloud_name", "jedidiahwahana",
+                                                             "api_key", "265895536179732",
+                                                             "api_secret", "sECFj7nAX6PWG29qf7OsU-BC7kY"));
     
     private static final String CHANNEL_SECRET = "17ba02a5c5c2307b0f9579d52ec48c58";
     private static final String CHANNEL_ACCESS_TOKEN = "3eb2RUEBHvOVQwBmD25oX8cjEDlIbzElCeVRNM2DeAXOLt8HV6dsSYcFDqtgNOtsCA8ylswoY2DEyeirTSNxrNKOTosCqEsS2ctLomVuy3KOCs8SB2BTwj8S3h5CYxnAkTnuT3pS2AxGaIvxHK7ofwdB04t89/1O/w1cDnyilFU=";
@@ -142,29 +149,10 @@ public class LineBotController
             }
         }
         
+        
         try {
-            BasicClient api = new BasicClient("8VAFVQ1GaQM7vVB0wELjxgWHdEp4o3", "0mvRsjtzPIZJW1ENktpz0ULOJcGgvZ");
-            api.setApiUrl("https://app.smartfile.com");
-//            String result = IOUtils.toString(api.get("/whoami"));
-//            System.out.println("Whoami test:");
-//            System.out.println(result);
-            HttpPost post = new HttpPost("https://app.smartfile.com/api/2/path/oper/import/");
-            post.setHeader("Content-type", "application/x-www-form-urlencoded");
-//            post.setHeader("Content-Length", Integer.toString(cLength));
-            List<NameValuePair> content = new ArrayList<NameValuePair>();
-            content.add(new BasicNameValuePair("dst", "https://app.smartfile.com/api/2/path/data/"));
-            content.add(new BasicNameValuePair("url", "https://api.line.me/v2/bot/message/" + msgId + "/content"));
-            post.setEntity(new UrlEncodedFormEntity(content));
-            HttpResponse response = c.execute(post);
-            BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-            StringBuffer postResult = new StringBuffer();
-            String line = "";
-            while ((line = rd.readLine()) != null)
-            {
-                postResult.append(line);
-            }
-            System.out.println(postResult.toString());
-        } catch (IOException | SmartFileException e) {
+            Map uploadResult = cloudinary.uploader().upload("https://api.line.me/v2/bot/message/" + msgId + "/content", ObjectUtils.emptyMap());
+        } catch (IOException e) {
             System.out.println("Exception is raised ");
             e.printStackTrace();
         }
