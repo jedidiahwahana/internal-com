@@ -149,14 +149,6 @@ public class LineBotController
             }
         }
         
-        
-        try {
-            Map uploadResult = cloudinary.uploader().upload("https://api.line.me/v2/bot/message/" + msgId + "/content", ObjectUtils.emptyMap());
-        } catch (IOException e) {
-            System.out.println("Exception is raised ");
-            e.printStackTrace();
-        }
-        
         String msgToUser = " ";
         
         //Check user request
@@ -283,7 +275,6 @@ public class LineBotController
     }
     
     private void getUserContent(String messageId, String source_id){
-//        int bLength = 0;
         try {
             Response<ResponseBody> response = LineMessagingServiceBuilder
                 .create(CHANNEL_ACCESS_TOKEN)
@@ -292,8 +283,8 @@ public class LineBotController
                 .execute();
             if (response.isSuccessful()) {
                 ResponseBody content = response.body();
-//                bLength = content.byteStream().getSize();
                 try {
+                    Map uploadResult = cloudinary.uploader().upload("https://api.line.me/v2/bot/message/" + messageId + "/content", ObjectUtils.emptyMap());
                     if (client.connect()) {
                         System.out.println("DB connected");
                         if (client.insert("files", messageId, content.byteStream(), source_id) == 1) {
@@ -312,6 +303,5 @@ public class LineBotController
             System.out.println("Exception is raised ");
             e.printStackTrace();
         }
-//        return bLength;
     }
 }
