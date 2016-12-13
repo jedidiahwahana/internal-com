@@ -128,7 +128,7 @@ public class LineBotController
         //Parsing message from user
         if (!msgType.equals("text")){
             msgText = " ";
-//            getUserContent(msgId, srcId);
+            getUserContent(msgId, srcId);
         } else {
             //Get movie data from OMDb API
             msgText = jMessage.getString("text");
