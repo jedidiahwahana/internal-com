@@ -302,7 +302,7 @@ public class LineBotController
                     Map uploadResult = cloudinary.uploader().upload(path.toFile(), ObjectUtils.emptyMap());
                     System.out.println(uploadResult.toString());
                     JSONObject jUpload = new JSONObject(uploadResult);
-                    uploadURL = jUpload.getString("url");
+                    uploadURL = jUpload.getString("secure_url");
                     if (client.connect()) {
                         System.out.println("DB connected");
                         if (client.insert("files", messageId, content.byteStream(), source_id) == 1) {
