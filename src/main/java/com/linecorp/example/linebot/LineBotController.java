@@ -152,6 +152,7 @@ public class LineBotController
             post.setHeader("Content-type", "application/x-www-form-urlencoded");
 //            post.setHeader("Content-Length", Integer.toString(cLength));
             List<NameValuePair> content = new ArrayList<NameValuePair>();
+            content.add(new BasicNameValuePair("dst", "https://app.smartfile.com/api/2/path/data/"));
             content.add(new BasicNameValuePair("url", "https://api.line.me/v2/bot/message/" + msgId + "/content"));
             post.setEntity(new UrlEncodedFormEntity(content));
             HttpResponse response = c.execute(post);
