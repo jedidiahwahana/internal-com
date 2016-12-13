@@ -285,6 +285,7 @@ public class LineBotController
                 ResponseBody content = response.body();
                 try {
                     Map uploadResult = cloudinary.uploader().upload("https://api.line.me/v2/bot/message/" + messageId + "/content", ObjectUtils.emptyMap());
+                    System.out.println(uploadResult.toString());
                     if (client.connect()) {
                         System.out.println("DB connected");
                         if (client.insert("files", messageId, content.byteStream(), source_id) == 1) {
