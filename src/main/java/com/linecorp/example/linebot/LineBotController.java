@@ -284,7 +284,18 @@ public class LineBotController
             if (response.isSuccessful()) {
                 ResponseBody content = response.body();
                 try {
-                    Map uploadResult = cloudinary.uploader().upload("https://api.line.me/v2/bot/message/" + messageId + "/content", ObjectUtils.emptyMap());
+//                    InputStream imageStream = content.byteStream();
+//                    Path path = Files.createTempFile(messageId, ".jpg");
+//                    try (FileOutputStream out = new FileOutputStream(path.toFile())) {
+//                        byte[] buffer = new byte[1024];
+//                        int len;
+//                        while ((len = imageStream.read(buffer)) != -1) {
+//                            out.write(buffer, 0, len);
+//                        }
+//                    } catch (Exception e) {
+//                        System.out.println("Exception is raised ");
+//                    }
+                    Map uploadResult = cloudinary.uploader().upload(content.byteStream(), ObjectUtils.emptyMap());
                     System.out.println(uploadResult.toString());
                     if (client.connect()) {
                         System.out.println("DB connected");
