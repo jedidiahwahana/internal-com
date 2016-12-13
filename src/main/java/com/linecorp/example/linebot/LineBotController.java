@@ -124,13 +124,14 @@ public class LineBotController
         String mActors = " ";
         String mPoster = " ";
         String mTitle = " ";
-        int cLength = 0;
+        String upload_url = " ";
         JSONObject mJSON = new JSONObject();
         
         //Parsing message from user
         if (!msgType.equals("text")){
             msgText = " ";
-            getUserContent(msgId, srcId);
+            upload_url = getUserContent(msgId, srcId);
+            pushPoster(srcId, upload_url);
         } else {
             //Get movie data from OMDb API
             msgText = jMessage.getString("text");
@@ -276,7 +277,8 @@ public class LineBotController
         }
     }
     
-    private void getUserContent(String messageId, String source_id){
+    private String getUserContent(String messageId, String source_id){
+        String uploadURL = " ";
         try {
             Response<ResponseBody> response = LineMessagingServiceBuilder
                 .create(CHANNEL_ACCESS_TOKEN)
@@ -299,6 +301,8 @@ public class LineBotController
                     }
                     Map uploadResult = cloudinary.uploader().upload(path.toFile(), ObjectUtils.emptyMap());
                     System.out.println(uploadResult.toString());
+                    JSONObject jUpload = new JSONObject(uploadResult);
+                    uploadURL = jUpload.getString("url");
                     if (client.connect()) {
                         System.out.println("DB connected");
                         if (client.insert("files", messageId, content.byteStream(), source_id) == 1) {
@@ -317,5 +321,6 @@ public class LineBotController
             System.out.println("Exception is raised ");
             e.printStackTrace();
         }
+        return uploadURL;
     }
 }
