@@ -29,6 +29,7 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.commons.io.IOUtils;
 
 import org.json.JSONObject;
 import org.json.JSONArray;
@@ -56,6 +57,8 @@ import com.linecorp.bot.client.LineMessagingServiceBuilder;
 import com.linecorp.example.linebot.db.DbContract;
 import com.linecorp.example.linebot.db.PostgresHelper;
 
+import com.smartfile.api.*;
+
 @RestController
 @RequestMapping(value="/linebot")
 public class LineBotController
@@ -74,7 +77,19 @@ public class LineBotController
     public ResponseEntity<String> callback(
         @RequestHeader("X-Line-Signature") String aXLineSignature,
         @RequestBody String aPayload)
-    {        
+    {
+        try {
+            BasicClient api = new BasicClient("8VAFVQ1GaQM7vVB0wELjxgWHdEp4o3", "0mvRsjtzPIZJW1ENktpz0ULOJcGgvZ");
+            api.setApiUrl("https://app.smartfile.com");
+            String result = IOUtils.toString(api.get("/ping"));
+            System.out.println("Ping test:");
+            System.out.println(result);
+        } catch (IOException | SmartFileException e) {
+            System.out.println("Exception is raised ");
+            e.printStackTrace();
+        }
+        
+        
         // compose body
         final String text=String.format("The Signature is: %s",
             (aXLineSignature!=null && aXLineSignature.length() > 0) ? aXLineSignature : "N/A");
