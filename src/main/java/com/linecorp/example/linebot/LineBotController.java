@@ -4,6 +4,8 @@ package com.linecorp.example.linebot;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.InputStream;
+import java.io.FileOutputStream;
 import java.util.Map;
 import java.util.Arrays;
 import java.util.ArrayList;
@@ -284,18 +286,18 @@ public class LineBotController
             if (response.isSuccessful()) {
                 ResponseBody content = response.body();
                 try {
-//                    InputStream imageStream = content.byteStream();
-//                    Path path = Files.createTempFile(messageId, ".jpg");
-//                    try (FileOutputStream out = new FileOutputStream(path.toFile())) {
-//                        byte[] buffer = new byte[1024];
-//                        int len;
-//                        while ((len = imageStream.read(buffer)) != -1) {
-//                            out.write(buffer, 0, len);
-//                        }
-//                    } catch (Exception e) {
-//                        System.out.println("Exception is raised ");
-//                    }
-                    Map uploadResult = cloudinary.uploader().upload(content.byteStream(), ObjectUtils.emptyMap());
+                    InputStream imageStream = content.byteStream();
+                    Path path = Files.createTempFile(messageId, ".jpg");
+                    try (FileOutputStream out = new FileOutputStream(path.toFile())) {
+                        byte[] buffer = new byte[1024];
+                        int len;
+                        while ((len = imageStream.read(buffer)) != -1) {
+                            out.write(buffer, 0, len);
+                        }
+                    } catch (Exception e) {
+                        System.out.println("Exception is raised ");
+                    }
+                    Map uploadResult = cloudinary.uploader().upload(path.toFile(), ObjectUtils.emptyMap());
                     System.out.println(uploadResult.toString());
                     if (client.connect()) {
                         System.out.println("DB connected");
