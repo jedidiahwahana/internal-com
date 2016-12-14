@@ -289,7 +289,7 @@ public class LineBotController
                 ResponseBody content = response.body();
                 try {
                     InputStream imageStream = content.byteStream();
-                    Path path = Files.createTempFile(messageId, ".jpg");
+                    Path path = Files.createTempFile(messageId, ".pdf");
                     try (FileOutputStream out = new FileOutputStream(path.toFile())) {
                         byte[] buffer = new byte[1024];
                         int len;
