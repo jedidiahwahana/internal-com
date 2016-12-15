@@ -111,8 +111,8 @@ public class LineBotController
             System.out.println("Payload: " + aPayload);
         }
         
-        Gson gson = new Gson();
-        Payload[] payload = gson.fromJson(aPayload, Payload[].class);
+//        Gson gson = new Gson();
+//        Payload[] payload = gson.fromJson(aPayload, Payload[].class);
         
         //Parsing JSONObject from source
         JSONObject jObject = new JSONObject(aPayload);
