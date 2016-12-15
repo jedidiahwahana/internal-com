@@ -14,6 +14,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ExecutionException;
 import java.nio.file.Path;
 import java.nio.file.Files;
+import java.nio.CharBuffer;
 import java.time.LocalDateTime;
 import java.sql.SQLException;
 import org.springframework.http.HttpStatus;
@@ -32,10 +33,16 @@ import org.apache.http.client.methods.HttpGet;
 //import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.nio.client.HttpAsyncClients;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
+import org.apache.http.nio.client.methods.HttpAsyncMethods;
+import org.apache.http.nio.client.methods.AsyncCharConsumer;
+import org.apache.http.nio.IOControl;
+import org.apache.http.protocol.HttpContext;
+import org.apache.http.nio.protocol.HttpAsyncRequestProducer;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.concurrent.FutureCallback;
 //import org.apache.http.annotation.ThreadingBehavior;
 import org.apache.commons.io.IOUtils;
 
@@ -198,15 +205,20 @@ public class LineBotController
         title = title.replace(" ", "+");
         System.out.println("Text from User: " + title);
         
-        c.start();
-        
         // Act as client with GET method
         String URI = "http://www.omdbapi.com/?t=" + title + "&r=json";
         System.out.println("URI: " +  URI);
         
         JSONObject jObjGet = new JSONObject();
+//        try{
+//            c.start();
+//            jObjGet = sendAsyncGetRequest(URI);
+//        } finally {
+//            c.close();
+//        }
         
         try{
+            c.start();
             HttpGet get = new HttpGet(URI);
             
             Future<HttpResponse> future = c.execute(get, null);
@@ -236,6 +248,67 @@ public class LineBotController
         
         return jObjGet;
     }
+    
+//    private JSONObject sendAsyncGetRequest(String url){
+//        JSONObject jObj = new JSONObject();
+//        System.out.println("Async call to URL...");
+//        HttpGet request = new HttpGet(url);
+//        HttpAsyncRequestProducer producer = HttpAsyncMethods.create(request);
+//        AsyncCharConsumer<HttpResponse> consumer = new AsyncCharConsumer<HttpResponse>() {
+//            
+//            HttpResponse response;
+//            
+//            @Override
+//            protected void onResponseReceived(final HttpResponse response) {
+//                this.response = response;
+//            }
+//            
+//            @Override
+//            protected void onCharReceived(final CharBuffer buf, final IOControl ioctrl) throws IOException {
+//                // Do something useful
+//            }
+//            
+//            @Override
+//            protected void releaseResources() {
+//            }
+//            
+//            @Override
+//            protected HttpResponse buildResult(final HttpContext context) {
+//                return this.response;
+//            }
+//        };
+//        
+//        c.execute(producer, consumer, new FutureCallback<HttpResponse>() {
+//            
+//            @Override
+//            public void completed(HttpResponse response) {
+//                BufferedReader brd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+//                
+//                StringBuffer resultGet = new StringBuffer();
+//                String lineGet = "";
+//                while ((lineGet = brd.readLine()) != null) {
+//                    resultGet.append(lineGet);
+//                }
+//                System.out.println("Got result");
+//                
+//                // Change type of resultGet to JSONObject
+//                jObj = new JSONObject(resultGet.toString());
+//                System.out.println("OMDb responses: " + resultGet.toString());
+//                System.out.println(response.toString());
+//            }
+//            
+//            @Override
+//            public void failed(Exception ex) {
+//                System.out.println("!!! Async http request failed!");
+//            }
+//            
+//            @Override
+//            public void cancelled() {
+//                System.out.println("Async http request canceled!");
+//            }
+//        });
+//        return jObj;
+//    }
     
     private void replyToUser(String rToken, String messageToUser){
         TextMessage textMessage = new TextMessage(messageToUser);
