@@ -242,8 +242,8 @@ public class LineBotController
         } catch (InterruptedException | ExecutionException e) {
             System.out.println("Exception is raised ");
             e.printStackTrace();
-        } finally {
-            c.close();
+//        } finally {
+//            c.close();
         }
         
         return jObjGet;
