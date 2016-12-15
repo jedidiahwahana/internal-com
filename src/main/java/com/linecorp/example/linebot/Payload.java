@@ -1,7 +1,7 @@
 package com.linecorp.example.linebot;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class Payload {
-    private ArrayList<Events> events[];
+    private List<Events> events;
 }
