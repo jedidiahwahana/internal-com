@@ -112,8 +112,8 @@ public class LineBotController
             System.out.println("Payload: " + aPayload);
         }
         
-//        Gson gson = new GsonBuilder().create();
-//        Payload payload = gson.fromJson(aPayload, Payload.class);
+        Gson gson = new GsonBuilder().create();
+        Payload[] payload = gson.fromJson(aPayload, Payload[].class);
         
         //Parsing JSONObject from source
         JSONObject jObject = new JSONObject(aPayload);
@@ -128,14 +128,6 @@ public class LineBotController
         
         //Variable initialization
         String msgText = " ";
-//        String mPlot = " ";
-//        String mReleased = " ";
-//        String mDirector = " ";
-//        String mWriter = " ";
-//        String mAwards = " ";
-//        String mActors = " ";
-//        String mPoster = " ";
-//        String mTitle = " ";
         String upload_url = " ";
         String mJSON = " ";
         
@@ -149,14 +141,6 @@ public class LineBotController
             msgText = msgText.toLowerCase();
             try {
                 mJSON = getMovieData(msgText);
-//                mPlot = mJSON.getString("Plot");
-//                mReleased = mJSON.getString("Released");
-//                mDirector = mJSON.getString("Director");
-//                mWriter = mJSON.getString("Writer");
-//                mAwards = mJSON.getString("Awards");
-//                mActors = mJSON.getString("Actors");
-//                mPoster = mJSON.getString("Poster");
-//                mTitle = mJSON.getString("Title");
             } catch (IOException e) {
                 System.out.println("Exception is raised ");
                 e.printStackTrace();
@@ -165,7 +149,6 @@ public class LineBotController
         
         Gson mGson = new GsonBuilder().create();
         Movie movie = mGson.fromJson(mJSON, Movie.class);
-        
         String msgToUser = " ";
         
         //Check user request
@@ -192,7 +175,7 @@ public class LineBotController
         
         System.out.println("OMDb responses: " + msgToUser);
         
-        if (msgToUser.length() <= 11){
+        if (msgToUser.length() <= 11 && msgType.equals("text")){
             replyToUser(reply_token, "Request Timeout");
         } else {
             replyToUser(reply_token, msgToUser);
