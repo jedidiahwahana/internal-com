@@ -68,9 +68,9 @@ import com.cloudinary.utils.ObjectUtils;
 public class LineBotController
 {
     RequestConfig requestConfig = RequestConfig.custom()
-                                        .setConnectTimeout(5 * 1000)
-                                        .setConnectionRequestTimeout(5 * 1000)
-                                        .setSocketTimeout(5 * 1000).build();
+                                        .setConnectTimeout(10 * 1000)
+                                        .setConnectionRequestTimeout(10 * 1000)
+                                        .setSocketTimeout(10 * 1000).build();
     CloseableHttpClient c = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).build();
     PostgresHelper client = new PostgresHelper(DbContract.URL);
     
