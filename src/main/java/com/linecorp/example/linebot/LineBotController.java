@@ -118,8 +118,8 @@ public class LineBotController
         JSONObject jObject = new JSONObject(aPayload);
         JSONArray jArray = jObject.getJSONArray("events");
         JSONObject jObj = jArray.getJSONObject(0);
-//        String reply_token = payload.events
-        String reply_token = jObj.getString("replyToken");
+        String reply_token = payload.events[0].replyToken;
+//        String reply_token = jObj.getString("replyToken");
         JSONObject jMessage = jObj.getJSONObject("message");
         String msgType = jMessage.getString("type");
         String msgId = jMessage.getString("id");
