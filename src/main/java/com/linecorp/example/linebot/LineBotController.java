@@ -194,6 +194,7 @@ public class LineBotController
         
         // Act as client with GET method
         String URI = "http://www.omdbapi.com/?t=" + title + "&r=json";
+        System.out.println("URI: " +  URI);
         
         HttpGet get = new HttpGet(URI);
         
@@ -289,7 +290,7 @@ public class LineBotController
                 ResponseBody content = response.body();
                 try {
                     InputStream imageStream = content.byteStream();
-                    Path path = Files.createTempFile(messageId, ".x");
+                    Path path = Files.createTempFile(messageId, ".jpg");
                     try (FileOutputStream out = new FileOutputStream(path.toFile())) {
                         byte[] buffer = new byte[1024];
                         int len;
