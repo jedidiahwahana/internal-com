@@ -164,7 +164,7 @@ public class LineBotController
         }
         
         Gson mGson = new GsonBuilder().create();
-        Movie movie = gson.fromJson(mJSON, Movie.class);
+        Movie movie = mGson.fromJson(mJSON, Movie.class);
         
         String msgToUser = " ";
         
