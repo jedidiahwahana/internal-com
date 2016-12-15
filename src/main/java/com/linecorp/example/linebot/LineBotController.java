@@ -43,7 +43,6 @@ import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
 import org.json.JSONArray;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import okhttp3.ResponseBody;
 import retrofit2.Response;
@@ -112,7 +111,7 @@ public class LineBotController
             System.out.println("Payload: " + aPayload);
         }
         
-        Gson gson = new GsonBuilder().create();
+        Gson gson = new Gson();
         Payload[] payload = gson.fromJson(aPayload, Payload[].class);
         
         //Parsing JSONObject from source
@@ -147,7 +146,7 @@ public class LineBotController
             }
         }
         
-        Gson mGson = new GsonBuilder().create();
+        Gson mGson = new Gson();
         Movie movie = mGson.fromJson(mJSON, Movie.class);
         String msgToUser = " ";
         
