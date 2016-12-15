@@ -79,7 +79,7 @@ public class LineBotController
 //                                        .setConnectionRequestTimeout(10 * 1000)
 //                                        .setSocketTimeout(10 * 1000).build();
 //    CloseableHttpClient c = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).build();
-    CloseableHttpAsyncClient c = HttpAsyncClients.createDefault();
+//    CloseableHttpAsyncClient c = HttpAsyncClients.createDefault();
     PostgresHelper client = new PostgresHelper(DbContract.URL);
     
     Cloudinary cloudinary = new Cloudinary(ObjectUtils.asMap(
@@ -113,18 +113,6 @@ public class LineBotController
         
         Gson gson = new Gson();
         Payload payload = gson.fromJson(aPayload, Payload.class);
-        
-        //Parsing JSONObject from source
-//        JSONObject jObject = new JSONObject(aPayload);
-//        JSONArray jArray = jObject.getJSONArray("events");
-//        JSONObject jObj = jArray.getJSONObject(0);
-//        String reply_token = payload.events[0].replyToken;
-//        String reply_token = jObj.getString("replyToken");
-//        JSONObject jMessage = jObj.getJSONObject("message");
-//        String msgType = jMessage.getString("type");
-//        String msgId = jMessage.getString("id");
-//        JSONObject jSource = jObj.getJSONObject("source");
-//        String srcId = jSource.getString("userId");
         
         //Variable initialization
         String msgText = " ";
@@ -175,7 +163,7 @@ public class LineBotController
         
         System.out.println("OMDb responses: " + msgToUser);
         
-        if (msgToUser.length() <= 11 && payload.events[0].message.type.equals("text")){
+        if (msgToUser.length() <= 11 || payload.events[0].message.type.equals("text")){
             replyToUser(payload.events[0].replyToken, "Request Timeout");
         } else {
             replyToUser(payload.events[0].replyToken, msgToUser);
@@ -194,6 +182,7 @@ public class LineBotController
         System.out.println("URI: " +  URI);
         
         String jObjGet = " ";
+        CloseableHttpAsyncClient c = HttpAsyncClients.createDefault();
         
         try{
             c.start();
@@ -220,8 +209,8 @@ public class LineBotController
         } catch (InterruptedException | ExecutionException e) {
             System.out.println("Exception is raised ");
             e.printStackTrace();
-//        } finally {
-//            c.close();
+        } finally {
+            c.close();
         }
         
         return jObjGet;
