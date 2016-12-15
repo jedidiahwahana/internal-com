@@ -109,8 +109,6 @@ public class LineBotController
             System.out.println("Payload: " + aPayload);
         }
         
-        c.start();
-        
         //Parsing JSONObject from source
         JSONObject jObject = new JSONObject(aPayload);
         JSONArray jArray = jObject.getJSONArray("events");
@@ -199,6 +197,8 @@ public class LineBotController
         title = title.substring(title.indexOf("\"") + 1, title.lastIndexOf("\""));
         title = title.replace(" ", "+");
         System.out.println("Text from User: " + title);
+        
+        c.start();
         
         // Act as client with GET method
         String URI = "http://www.omdbapi.com/?t=" + title + "&r=json";
