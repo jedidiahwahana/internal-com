@@ -74,16 +74,9 @@ import com.cloudinary.utils.ObjectUtils;
 @RequestMapping(value="/linebot")
 public class LineBotController
 {
-//    RequestConfig requestConfig = RequestConfig.custom()
-//                                        .setConnectTimeout(10 * 1000)
-//                                        .setConnectionRequestTimeout(10 * 1000)
-//                                        .setSocketTimeout(10 * 1000).build();
-//    CloseableHttpClient c = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).build();
-//    CloseableHttpAsyncClient c = HttpAsyncClients.createDefault();
     PostgresHelper client = new PostgresHelper(DbContract.URL);
     
-    Cloudinary cloudinary = new Cloudinary(ObjectUtils.asMap(
-                                                             "cloud_name", "jedidiahwahana",
+    Cloudinary cloudinary = new Cloudinary(ObjectUtils.asMap("cloud_name", "jedidiahwahana",
                                                              "api_key", "265895536179732",
                                                              "api_secret", "sECFj7nAX6PWG29qf7OsU-BC7kY"));
     
