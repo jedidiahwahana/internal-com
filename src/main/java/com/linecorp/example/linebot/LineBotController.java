@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Future;
+import java.util.concurrent.ExecutionException;
 import java.nio.file.Path;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
@@ -27,11 +29,14 @@ import org.apache.http.HttpResponse;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
+//import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.nio.client.HttpAsyncClients;
+import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.client.config.RequestConfig;
+//import org.apache.http.annotation.ThreadingBehavior;
 import org.apache.commons.io.IOUtils;
 
 import org.json.JSONObject;
@@ -67,11 +72,12 @@ import com.cloudinary.utils.ObjectUtils;
 @RequestMapping(value="/linebot")
 public class LineBotController
 {
-    RequestConfig requestConfig = RequestConfig.custom()
-                                        .setConnectTimeout(10 * 1000)
-                                        .setConnectionRequestTimeout(10 * 1000)
-                                        .setSocketTimeout(10 * 1000).build();
-    CloseableHttpClient c = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).build();
+//    RequestConfig requestConfig = RequestConfig.custom()
+//                                        .setConnectTimeout(10 * 1000)
+//                                        .setConnectionRequestTimeout(10 * 1000)
+//                                        .setSocketTimeout(10 * 1000).build();
+//    CloseableHttpClient c = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).build();
+    CloseableHttpAsyncClient c = HttpAsyncClients.createDefault();
     PostgresHelper client = new PostgresHelper(DbContract.URL);
     
     Cloudinary cloudinary = new Cloudinary(ObjectUtils.asMap(
@@ -102,6 +108,8 @@ public class LineBotController
         {
             System.out.println("Payload: " + aPayload);
         }
+        
+        c.start();
         
         //Parsing JSONObject from source
         JSONObject jObject = new JSONObject(aPayload);
@@ -196,25 +204,35 @@ public class LineBotController
         String URI = "http://www.omdbapi.com/?t=" + title + "&r=json";
         System.out.println("URI: " +  URI);
         
-        HttpGet get = new HttpGet(URI);
+        JSONObject jObjGet = new JSONObject();
         
-        HttpResponse responseGet = c.execute(get);
-        System.out.println("HTTP executed");
-        System.out.println("HTTP Status of response: " + responseGet.getStatusLine().getStatusCode());
-        
-        // Get the response from the GET request
-        BufferedReader brd = new BufferedReader(new InputStreamReader(responseGet.getEntity().getContent()));
-        
-        StringBuffer resultGet = new StringBuffer();
-        String lineGet = "";
-        while ((lineGet = brd.readLine()) != null) {
-            resultGet.append(lineGet);
+        try{
+            HttpGet get = new HttpGet(URI);
+            
+            Future<HttpResponse> future = c.execute(get, null);
+            HttpResponse responseGet = future.get();
+            System.out.println("HTTP executed");
+            System.out.println("HTTP Status of response: " + responseGet.getStatusLine().getStatusCode());
+            
+            // Get the response from the GET request
+            BufferedReader brd = new BufferedReader(new InputStreamReader(responseGet.getEntity().getContent()));
+            
+            StringBuffer resultGet = new StringBuffer();
+            String lineGet = "";
+            while ((lineGet = brd.readLine()) != null) {
+                resultGet.append(lineGet);
+            }
+            System.out.println("Got result");
+            
+            // Change type of resultGet to JSONObject
+            jObjGet = new JSONObject(resultGet.toString());
+            System.out.println("OMDb responses: " + resultGet.toString());
+        } catch (InterruptedException | ExecutionException e) {
+            System.out.println("Exception is raised ");
+            e.printStackTrace();
+        } finally {
+            c.close();
         }
-        System.out.println("Got result");
-        
-        // Change type of resultGet to JSONObject
-        JSONObject jObjGet = new JSONObject(resultGet.toString());
-        System.out.println("OMDb responses: " + resultGet.toString());
         
         return jObjGet;
     }
