@@ -115,15 +115,15 @@ public class LineBotController
         Payload payload = gson.fromJson(aPayload, Payload.class);
         
         //Parsing JSONObject from source
-//        JSONObject jObject = new JSONObject(aPayload);
-//        JSONArray jArray = jObject.getJSONArray("events");
-//        JSONObject jObj = jArray.getJSONObject(0);
-//        String reply_token = jObj.getString("replyToken");
-//        JSONObject jMessage = jObj.getJSONObject("message");
-//        String msgType = jMessage.getString("type");
-//        String msgId = jMessage.getString("id");
-//        JSONObject jSource = jObj.getJSONObject("source");
-//        String srcId = jSource.getString("userId");
+        JSONObject jObject = new JSONObject(aPayload);
+        JSONArray jArray = jObject.getJSONArray("events");
+        JSONObject jObj = jArray.getJSONObject(0);
+        String reply_token = jObj.getString("replyToken");
+        JSONObject jMessage = jObj.getJSONObject("message");
+        String msgType = jMessage.getString("type");
+        String msgId = jMessage.getString("id");
+        JSONObject jSource = jObj.getJSONObject("source");
+        String srcId = jSource.getString("userId");
         
         //Variable initialization
         String msgText = " ";
