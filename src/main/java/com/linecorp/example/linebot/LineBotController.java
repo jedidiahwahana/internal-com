@@ -115,16 +115,16 @@ public class LineBotController
         Payload payload = gson.fromJson(aPayload, Payload.class);
         
         //Parsing JSONObject from source
-        JSONObject jObject = new JSONObject(aPayload);
-        JSONArray jArray = jObject.getJSONArray("events");
-        JSONObject jObj = jArray.getJSONObject(0);
-        String reply_token = payload.events[0].replyToken;
+//        JSONObject jObject = new JSONObject(aPayload);
+//        JSONArray jArray = jObject.getJSONArray("events");
+//        JSONObject jObj = jArray.getJSONObject(0);
+//        String reply_token = payload.events[0].replyToken;
 //        String reply_token = jObj.getString("replyToken");
-        JSONObject jMessage = jObj.getJSONObject("message");
-        String msgType = jMessage.getString("type");
-        String msgId = jMessage.getString("id");
-        JSONObject jSource = jObj.getJSONObject("source");
-        String srcId = jSource.getString("userId");
+//        JSONObject jMessage = jObj.getJSONObject("message");
+//        String msgType = jMessage.getString("type");
+//        String msgId = jMessage.getString("id");
+//        JSONObject jSource = jObj.getJSONObject("source");
+//        String srcId = jSource.getString("userId");
         
         //Variable initialization
         String msgText = " ";
@@ -132,12 +132,12 @@ public class LineBotController
         String mJSON = " ";
         
         //Parsing message from user
-        if (!msgType.equals("text")){
-            upload_url = getUserContent(msgId, srcId);
-            pushPoster(srcId, upload_url);
+        if (!payload.events[0].message.type.equals("text")){
+            upload_url = getUserContent(payload.events[0].message.id, payload.events[0].source.userId);
+            pushPoster(payload.events[0].source.userId, upload_url);
         } else {
             //Get movie data from OMDb API
-            msgText = jMessage.getString("text");
+            msgText = payload.events[0].message.text;
             msgText = msgText.toLowerCase();
             try {
                 mJSON = getMovieData(msgText);
@@ -154,13 +154,13 @@ public class LineBotController
         //Check user request
         if (msgText.contains("title")){
             msgToUser = movie.getMovie();
-            pushPoster(srcId, movie.getPoster());
+            pushPoster(payload.events[0].source.userId, movie.getPoster());
         } else if (msgText.contains("plot")){
             msgToUser = movie.getPlot();
         } else if (msgText.contains("released")){
             msgToUser = movie.getReleased();
         } else if (msgText.contains("poster")){
-            pushPoster(srcId, movie.getPoster());
+            pushPoster(payload.events[0].source.userId, movie.getPoster());
         } else if (msgText.contains("director")){
             msgToUser = movie.getDirector();
         } else if (msgText.contains("writer")){
@@ -170,15 +170,15 @@ public class LineBotController
         } else if (msgText.contains("actors")){
             msgToUser = movie.getActors();
         } else if (msgText.contains("carousel")){
-            carouselForUser(movie.getPoster(), srcId, movie.getTitle());
+            carouselForUser(movie.getPoster(), payload.events[0].source.userId, movie.getTitle());
         }
         
         System.out.println("OMDb responses: " + msgToUser);
         
-        if (msgToUser.length() <= 11 && msgType.equals("text")){
-            replyToUser(reply_token, "Request Timeout");
+        if (msgToUser.length() <= 11 && payload.events[0].message.type.equals("text")){
+            replyToUser(payload.events[0].replyToken, "Request Timeout");
         } else {
-            replyToUser(reply_token, msgToUser);
+            replyToUser(payload.events[0].replyToken, msgToUser);
         }
          
         return new ResponseEntity<String>(HttpStatus.OK);
