@@ -30,24 +30,20 @@ import org.apache.http.HttpResponse;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpGet;
-//import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.nio.client.HttpAsyncClients;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
-import org.apache.http.nio.client.methods.HttpAsyncMethods;
-import org.apache.http.nio.client.methods.AsyncCharConsumer;
-import org.apache.http.nio.IOControl;
-import org.apache.http.protocol.HttpContext;
 import org.apache.http.nio.protocol.HttpAsyncRequestProducer;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.client.config.RequestConfig;
-import org.apache.http.concurrent.FutureCallback;
 //import org.apache.http.annotation.ThreadingBehavior;
 import org.apache.commons.io.IOUtils;
 
 import org.json.JSONObject;
 import org.json.JSONArray;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import okhttp3.ResponseBody;
 import retrofit2.Response;
@@ -116,6 +112,9 @@ public class LineBotController
             System.out.println("Payload: " + aPayload);
         }
         
+        Gson gson = new GsonBuilder().create();
+        Payload payload = gson.fromJson(aPayload, Payload.class);
+        
         //Parsing JSONObject from source
         JSONObject jObject = new JSONObject(aPayload);
         JSONArray jArray = jObject.getJSONArray("events");
@@ -129,20 +128,19 @@ public class LineBotController
         
         //Variable initialization
         String msgText = " ";
-        String mPlot = " ";
-        String mReleased = " ";
-        String mDirector = " ";
-        String mWriter = " ";
-        String mAwards = " ";
-        String mActors = " ";
-        String mPoster = " ";
-        String mTitle = " ";
+//        String mPlot = " ";
+//        String mReleased = " ";
+//        String mDirector = " ";
+//        String mWriter = " ";
+//        String mAwards = " ";
+//        String mActors = " ";
+//        String mPoster = " ";
+//        String mTitle = " ";
         String upload_url = " ";
-        JSONObject mJSON = new JSONObject();
+        String mJSON = " ";
         
         //Parsing message from user
         if (!msgType.equals("text")){
-            msgText = " ";
             upload_url = getUserContent(msgId, srcId);
             pushPoster(srcId, upload_url);
         } else {
@@ -151,42 +149,45 @@ public class LineBotController
             msgText = msgText.toLowerCase();
             try {
                 mJSON = getMovieData(msgText);
-                mPlot = mJSON.getString("Plot");
-                mReleased = mJSON.getString("Released");
-                mDirector = mJSON.getString("Director");
-                mWriter = mJSON.getString("Writer");
-                mAwards = mJSON.getString("Awards");
-                mActors = mJSON.getString("Actors");
-                mPoster = mJSON.getString("Poster");
-                mTitle = mJSON.getString("Title");
+//                mPlot = mJSON.getString("Plot");
+//                mReleased = mJSON.getString("Released");
+//                mDirector = mJSON.getString("Director");
+//                mWriter = mJSON.getString("Writer");
+//                mAwards = mJSON.getString("Awards");
+//                mActors = mJSON.getString("Actors");
+//                mPoster = mJSON.getString("Poster");
+//                mTitle = mJSON.getString("Title");
             } catch (IOException e) {
                 System.out.println("Exception is raised ");
                 e.printStackTrace();
             }
         }
         
+        Gson mGson = new GsonBuilder().create();
+        Movie movie = gson.fromJson(mJSON, Movie.class);
+        
         String msgToUser = " ";
         
         //Check user request
         if (msgText.contains("title")){
-            msgToUser = "Plot: " + mPlot + "\nReleased: " + mReleased + "\nDirector: " + mDirector + "\nWriter: " + mWriter + "\nAwards: " + mAwards + "\nActors: " + mActors;
-            pushPoster(srcId, mPoster);
+            msgToUser = movie.getMovie();
+            pushPoster(srcId, movie.getPoster());
         } else if (msgText.contains("plot")){
-            msgToUser = "Plot: " + mPlot;
+            msgToUser = movie.getPlot();
         } else if (msgText.contains("released")){
-            msgToUser = "Released: " + mReleased;
+            msgToUser = movie.getReleased();
         } else if (msgText.contains("poster")){
-            pushPoster(srcId, mPoster);
+            pushPoster(srcId, movie.getPoster());
         } else if (msgText.contains("director")){
-            msgToUser = "Director: " + mDirector;
+            msgToUser = movie.getDirector();
         } else if (msgText.contains("writer")){
-            msgToUser = "Writer: " + mWriter;
+            msgToUser = movie.getWriter();
         } else if (msgText.contains("awards")){
-            msgToUser = "Awards: " + mAwards;
+            msgToUser = movie.getAwards();
         } else if (msgText.contains("actors")){
-            msgToUser = "Actors: " + mActors;
+            msgToUser = movie.getActors();
         } else if (msgText.contains("carousel")){
-            carouselForUser(mPoster, srcId, mTitle);
+            carouselForUser(movie.getPoster(), srcId, movie.getTitle());
         }
         
         System.out.println("OMDb responses: " + msgToUser);
@@ -200,7 +201,7 @@ public class LineBotController
         return new ResponseEntity<String>(HttpStatus.OK);
     }
     
-    private JSONObject getMovieData(String title) throws IOException{
+    private String getMovieData(String title) throws IOException{
         title = title.substring(title.indexOf("\"") + 1, title.lastIndexOf("\""));
         title = title.replace(" ", "+");
         System.out.println("Text from User: " + title);
@@ -209,13 +210,7 @@ public class LineBotController
         String URI = "http://www.omdbapi.com/?t=" + title + "&r=json";
         System.out.println("URI: " +  URI);
         
-        JSONObject jObjGet = new JSONObject();
-//        try{
-//            c.start();
-//            jObjGet = sendAsyncGetRequest(URI);
-//        } finally {
-//            c.close();
-//        }
+        String jObjGet = " ";
         
         try{
             c.start();
@@ -237,8 +232,8 @@ public class LineBotController
             System.out.println("Got result");
             
             // Change type of resultGet to JSONObject
-            jObjGet = new JSONObject(resultGet.toString());
-            System.out.println("OMDb responses: " + resultGet.toString());
+            jObjGet = resultGet.toString();
+            System.out.println("OMDb responses: " + jObjGet);
         } catch (InterruptedException | ExecutionException e) {
             System.out.println("Exception is raised ");
             e.printStackTrace();
@@ -248,68 +243,7 @@ public class LineBotController
         
         return jObjGet;
     }
-    
-//    private JSONObject sendAsyncGetRequest(String url){
-//        JSONObject jObj = new JSONObject();
-//        System.out.println("Async call to URL...");
-//        HttpGet request = new HttpGet(url);
-//        HttpAsyncRequestProducer producer = HttpAsyncMethods.create(request);
-//        AsyncCharConsumer<HttpResponse> consumer = new AsyncCharConsumer<HttpResponse>() {
-//            
-//            HttpResponse response;
-//            
-//            @Override
-//            protected void onResponseReceived(final HttpResponse response) {
-//                this.response = response;
-//            }
-//            
-//            @Override
-//            protected void onCharReceived(final CharBuffer buf, final IOControl ioctrl) throws IOException {
-//                // Do something useful
-//            }
-//            
-//            @Override
-//            protected void releaseResources() {
-//            }
-//            
-//            @Override
-//            protected HttpResponse buildResult(final HttpContext context) {
-//                return this.response;
-//            }
-//        };
-//        
-//        c.execute(producer, consumer, new FutureCallback<HttpResponse>() {
-//            
-//            @Override
-//            public void completed(HttpResponse response) {
-//                BufferedReader brd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-//                
-//                StringBuffer resultGet = new StringBuffer();
-//                String lineGet = "";
-//                while ((lineGet = brd.readLine()) != null) {
-//                    resultGet.append(lineGet);
-//                }
-//                System.out.println("Got result");
-//                
-//                // Change type of resultGet to JSONObject
-//                jObj = new JSONObject(resultGet.toString());
-//                System.out.println("OMDb responses: " + resultGet.toString());
-//                System.out.println(response.toString());
-//            }
-//            
-//            @Override
-//            public void failed(Exception ex) {
-//                System.out.println("!!! Async http request failed!");
-//            }
-//            
-//            @Override
-//            public void cancelled() {
-//                System.out.println("Async http request canceled!");
-//            }
-//        });
-//        return jObj;
-//    }
-    
+
     private void replyToUser(String rToken, String messageToUser){
         TextMessage textMessage = new TextMessage(messageToUser);
         ReplyMessage replyMessage = new ReplyMessage(rToken, textMessage);
