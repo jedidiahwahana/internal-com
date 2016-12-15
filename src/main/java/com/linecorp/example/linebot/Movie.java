@@ -1,6 +1,7 @@
 package com.linecorp.example.linebot;
 
 public class Movie {
+
     private String Title;
     private String Released;
     private String Director;
