@@ -130,10 +130,10 @@ public class LineBotController
         
         if (payload.events[0].type.equals("join")){
             if (payload.events[0].source.type.equals("group")){
-                pushType(payload.events[0].source.groupId, "Hello Group");
+                replyToUser(payload.events[0].replyToken, "Hello Group");
             }
             if (payload.events[0].source.type.equals("room")){
-                pushType(payload.events[0].source.groupId, "Hello Room");
+                replyToUser(payload.events[0].replyToken, "Hello Room");
             }
         }
         
