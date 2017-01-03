@@ -113,11 +113,11 @@ public class LineBotController
         String mJSON = " ";
         
         if (payload.events[0].source.type.equals("group")){
-            pushType(payload.events[0].source.groupId, "Hello Group");
+            pushType(payload.events[0].source.groupId, payload.events[0].message.text);
         } else if (payload.events[0].source.type.equals("room")){
-            pushType(payload.events[0].source.roomId, "Hello Room");
+            pushType(payload.events[0].source.roomId, payload.events[0].message.text);
         } else if (payload.events[0].source.type.equals("user")){
-            pushType(payload.events[0].source.userId, "Hello User");
+            pushType(payload.events[0].source.userId, payload.events[0].message.text);
         }
         
         
