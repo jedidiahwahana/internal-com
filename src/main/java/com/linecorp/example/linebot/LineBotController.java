@@ -120,12 +120,12 @@ public class LineBotController
             //Get movie data from OMDb API
             msgText = payload.events[0].message.text;
             msgText = msgText.toLowerCase();
-            try {
-                mJSON = getMovieData(msgText);
-            } catch (IOException e) {
-                System.out.println("Exception is raised ");
-                e.printStackTrace();
-            }
+//            try {
+//                mJSON = getMovieData(msgText);
+//            } catch (IOException e) {
+//                System.out.println("Exception is raised ");
+//                e.printStackTrace();
+//            }
         }
         
         if (payload.events[0].source.type.equals("group")){
