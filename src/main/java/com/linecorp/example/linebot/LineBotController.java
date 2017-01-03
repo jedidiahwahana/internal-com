@@ -112,6 +112,15 @@ public class LineBotController
         String upload_url = " ";
         String mJSON = " ";
         
+        if (payload.events[0].source.type.equals("group")){
+            pushType(payload.events[0].source.groupId, "Hello Group");
+        } else if (payload.events[0].source.type.equals("room")){
+            pushType(payload.events[0].source.roomId, "Hello Room");
+        } else if (payload.events[0].source.type.equals("user")){
+            pushType(payload.events[0].source.userId, "Hello User");
+        }
+        
+        
         //Parsing message from user
         if (!payload.events[0].message.type.equals("text")){
             upload_url = getUserContent(payload.events[0].message.id, payload.events[0].source.userId);
@@ -234,6 +243,22 @@ public class LineBotController
                 .build()
                 .pushMessage(pushMessage)
                 .execute();
+            System.out.println(response.code() + " " + response.message());
+        } catch (IOException e) {
+            System.out.println("Exception is raised ");
+            e.printStackTrace();
+        }
+    }
+    
+    private void pushType(String sourceId, String txt){
+        TextMessage textMessage = new TextMessage(txt);
+        PushMessage pushMessage = new PushMessage(sourceId,textMessage);
+        try {
+            Response<BotApiResponse> response = LineMessagingServiceBuilder
+            .create(CHANNEL_ACCESS_TOKEN)
+            .build()
+            .pushMessage(pushMessage)
+            .execute();
             System.out.println(response.code() + " " + response.message());
         } catch (IOException e) {
             System.out.println("Exception is raised ");
