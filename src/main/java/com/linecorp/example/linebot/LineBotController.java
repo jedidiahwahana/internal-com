@@ -112,15 +112,6 @@ public class LineBotController
         String upload_url = " ";
         String mJSON = " ";
         
-        if (payload.events[0].source.type.equals("group")){
-            pushType(payload.events[0].source.groupId, payload.events[0].message.text);
-        } else if (payload.events[0].source.type.equals("room")){
-            pushType(payload.events[0].source.roomId, payload.events[0].message.text);
-        } else if (payload.events[0].source.type.equals("user")){
-            pushType(payload.events[0].source.userId, payload.events[0].message.text);
-        }
-        
-        
         //Parsing message from user
         if (!payload.events[0].message.type.equals("text")){
             upload_url = getUserContent(payload.events[0].message.id, payload.events[0].source.userId);
@@ -135,6 +126,20 @@ public class LineBotController
                 System.out.println("Exception is raised ");
                 e.printStackTrace();
             }
+        }
+        
+        if (payload.events[0].source.type.equals("group")){
+            pushType(payload.events[0].source.groupId, msgText);
+            if (msgText.contains("leave")){
+                leaveGR(payload.events[0].source.groupId, "group");
+            }
+        } else if (payload.events[0].source.type.equals("room")){
+            pushType(payload.events[0].source.roomId, msgText);
+            if (msgText.contains("leave")){
+                leaveGR(payload.events[0].source.roomId, "room");
+            }
+        } else if (payload.events[0].source.type.equals("user")){
+            pushType(payload.events[0].source.userId, msgText);
         }
         
         Gson mGson = new Gson();
@@ -338,5 +343,28 @@ public class LineBotController
             e.printStackTrace();
         }
         return uploadURL;
+    }
+    
+    private void leaveGR(String id, String type){
+        try {
+            if (type.equals("group")){
+                Response<BotApiResponse> response = LineMessagingServiceBuilder
+                    .create(CHANNEL_ACCESS_TOKEN)
+                    .build()
+                    .leaveGroup(id)
+                    .execute();
+                System.out.println(response.code() + " " + response.message());
+            } else if (type.equals("room")){
+                Response<BotApiResponse> response = LineMessagingServiceBuilder
+                    .create(CHANNEL_ACCESS_TOKEN)
+                    .build()
+                    .leaveRoom(id)
+                    .execute();
+                System.out.println(response.code() + " " + response.message());
+            }
+        } catch (IOException e) {
+            System.out.println("Exception is raised ");
+            e.printStackTrace();
+        }
     }
 }
