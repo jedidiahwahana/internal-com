@@ -113,20 +113,20 @@ public class LineBotController
         String mJSON = " ";
         
         //Parsing message from user
-        if (!payload.events[0].message.type.equals("text")){
-            upload_url = getUserContent(payload.events[0].message.id, payload.events[0].source.userId);
-            pushPoster(payload.events[0].source.userId, upload_url);
-        } else {
-            //Get movie data from OMDb API
-            msgText = payload.events[0].message.text;
-            msgText = msgText.toLowerCase();
+//        if (!payload.events[0].message.type.equals("text")){
+//            upload_url = getUserContent(payload.events[0].message.id, payload.events[0].source.userId);
+//            pushPoster(payload.events[0].source.userId, upload_url);
+//        } else {
+//            //Get movie data from OMDb API
+//            msgText = payload.events[0].message.text;
+//            msgText = msgText.toLowerCase();
 //            try {
 //                mJSON = getMovieData(msgText);
 //            } catch (IOException e) {
 //                System.out.println("Exception is raised ");
 //                e.printStackTrace();
 //            }
-        }
+//        }
         
         if (payload.events[0].type.equals("join")){
             if (payload.events[0].source.type.equals("group")){
@@ -138,13 +138,13 @@ public class LineBotController
         }
         
         if (payload.events[0].source.type.equals("group")){
-            pushType(payload.events[0].source.groupId, msgText);
-            if (msgText.contains("leave")){
+            pushType(payload.events[0].source.groupId, payload.events[0].message.text);
+            if (payload.events[0].message.text.contains("leave")){
                 leaveGR(payload.events[0].source.groupId, "group");
             }
         } else if (payload.events[0].source.type.equals("room")){
-            pushType(payload.events[0].source.roomId, msgText);
-            if (msgText.contains("leave")){
+            pushType(payload.events[0].source.roomId, payload.events[0].message.text);
+            if (payload.events[0].message.text.contains("leave")){
                 leaveGR(payload.events[0].source.roomId, "room");
             }
         } else if (payload.events[0].source.type.equals("user")){
