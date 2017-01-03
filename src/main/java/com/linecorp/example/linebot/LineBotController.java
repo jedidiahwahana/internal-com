@@ -128,6 +128,15 @@ public class LineBotController
 //            }
         }
         
+        if (payload.events[0].type.equals("join")){
+            if (payload.events[0].source.type.equals("group")){
+                pushType(payload.events[0].source.groupId, "Hello Group");
+            }
+            if (payload.events[0].source.type.equals("room")){
+                pushType(payload.events[0].source.groupId, "Hello Room");
+            }
+        }
+        
         if (payload.events[0].source.type.equals("group")){
             pushType(payload.events[0].source.groupId, msgText);
             if (msgText.contains("leave")){

@@ -1,6 +1,7 @@
 package com.linecorp.example.linebot;
 
 public class Events {
+    public String type;
     public String replyToken;
     public Source source;
     public Long timestamp;
