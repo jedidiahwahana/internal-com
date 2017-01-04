@@ -129,23 +129,25 @@ public class LineBotController
                 msgText = payload.events[0].message.text;
                 msgText = msgText.toLowerCase();
                 
-                try {
-                    getMovieData(msgText, payload);
-                } catch (IOException e) {
-                    System.out.println("Exception is raised ");
-                    e.printStackTrace();
+                if (!msgText.contains("bot leave")){
+                    try {
+                        getMovieData(msgText, payload);
+                    } catch (IOException e) {
+                        System.out.println("Exception is raised ");
+                        e.printStackTrace();
+                    }
+                } else {
+                    if (payload.events[0].source.type.equals("group")){
+                        leaveGR(payload.events[0].source.groupId, "group");
+                    } else if (payload.events[0].source.type.equals("room")){
+                        leaveGR(payload.events[0].source.roomId, "room");
+                    }
                 }
                 
                 if (payload.events[0].source.type.equals("group")){
                     pushType(payload.events[0].source.groupId, msgText + " - Group");
-                    if (msgText.contains("leave")){
-                        leaveGR(payload.events[0].source.groupId, "group");
-                    }
                 } else if (payload.events[0].source.type.equals("room")){
                     pushType(payload.events[0].source.roomId, msgText + " - Room");
-                    if (msgText.contains("leave")){
-                        leaveGR(payload.events[0].source.roomId, "room");
-                    }
                 } else if (payload.events[0].source.type.equals("user")){
                     pushType(payload.events[0].source.userId, msgText + " - User");
                 }
