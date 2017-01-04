@@ -37,7 +37,6 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.client.config.RequestConfig;
-//import org.apache.http.annotation.ThreadingBehavior;
 import org.apache.commons.io.IOUtils;
 
 import org.json.JSONObject;
@@ -111,84 +110,51 @@ public class LineBotController
         String msgText = " ";
         String upload_url = " ";
         String mJSON = " ";
+        String eventType = payload.events[0].type;
         
-        //Parsing message from user
-//        if (!payload.events[0].message.type.equals("text")){
-//            upload_url = getUserContent(payload.events[0].message.id, payload.events[0].source.userId);
-//            pushPoster(payload.events[0].source.userId, upload_url);
-//        } else {
-//            //Get movie data from OMDb API
-//            msgText = payload.events[0].message.text;
-//            msgText = msgText.toLowerCase();
-//            try {
-//                mJSON = getMovieData(msgText);
-//            } catch (IOException e) {
-//                System.out.println("Exception is raised ");
-//                e.printStackTrace();
-//            }
-//        }
-        
-        if (payload.events[0].type.equals("join")){
+        if (eventType.equals("join")){
             if (payload.events[0].source.type.equals("group")){
                 replyToUser(payload.events[0].replyToken, "Hello Group");
             }
             if (payload.events[0].source.type.equals("room")){
                 replyToUser(payload.events[0].replyToken, "Hello Room");
             }
-        }
-        
-        if (payload.events[0].source.type.equals("group")){
-            pushType(payload.events[0].source.groupId, payload.events[0].message.text);
-            if (payload.events[0].message.text.contains("leave")){
-                leaveGR(payload.events[0].source.groupId, "group");
+        } else if (eventType.equals("message")){
+            //Parsing message from user
+            if (!payload.events[0].message.type.equals("text")){
+                upload_url = getUserContent(payload.events[0].message.id, payload.events[0].source.userId);
+                pushPoster(payload.events[0].source.userId, upload_url);
+            } else {
+                //Get movie data from OMDb API
+                msgText = payload.events[0].message.text;
+                msgText = msgText.toLowerCase();
+                if (payload.events[0].source.type.equals("group")){
+                    pushType(payload.events[0].source.groupId, msgText + " - Group");
+                    if (msgText.contains("leave")){
+                        leaveGR(payload.events[0].source.groupId, "group");
+                    }
+                } else if (payload.events[0].source.type.equals("room")){
+                    pushType(payload.events[0].source.roomId, msgText + " - Room");
+                    if (msgText.contains("leave")){
+                        leaveGR(payload.events[0].source.roomId, "room");
+                    }
+                } else if (payload.events[0].source.type.equals("user")){
+                    pushType(payload.events[0].source.userId, msgText + " - User");
+                }
+                
+                try {
+                    getMovieData(msgText, payload);
+                } catch (IOException e) {
+                    System.out.println("Exception is raised ");
+                    e.printStackTrace();
+                }
             }
-        } else if (payload.events[0].source.type.equals("room")){
-            pushType(payload.events[0].source.roomId, payload.events[0].message.text);
-            if (payload.events[0].message.text.contains("leave")){
-                leaveGR(payload.events[0].source.roomId, "room");
-            }
-        } else if (payload.events[0].source.type.equals("user")){
-            pushType(payload.events[0].source.userId, msgText);
-        }
-        
-        Gson mGson = new Gson();
-        Movie movie = mGson.fromJson(mJSON, Movie.class);
-        String msgToUser = " ";
-        
-        //Check user request
-        if (msgText.contains("title")){
-            msgToUser = movie.getMovie();
-            pushPoster(payload.events[0].source.userId, movie.getPoster());
-        } else if (msgText.contains("plot")){
-            msgToUser = movie.getPlot();
-        } else if (msgText.contains("released")){
-            msgToUser = movie.getReleased();
-        } else if (msgText.contains("poster")){
-            pushPoster(payload.events[0].source.userId, movie.getPoster());
-        } else if (msgText.contains("director")){
-            msgToUser = movie.getDirector();
-        } else if (msgText.contains("writer")){
-            msgToUser = movie.getWriter();
-        } else if (msgText.contains("awards")){
-            msgToUser = movie.getAwards();
-        } else if (msgText.contains("actors")){
-            msgToUser = movie.getActors();
-        } else if (msgText.contains("carousel")){
-            carouselForUser(movie.getPoster(), payload.events[0].source.userId, movie.getTitle());
-        }
-        
-        System.out.println("OMDb responses: " + msgToUser);
-        
-        if (msgToUser.length() <= 11 || !payload.events[0].message.type.equals("text")){
-            replyToUser(payload.events[0].replyToken, "Request Timeout");
-        } else {
-            replyToUser(payload.events[0].replyToken, msgToUser);
         }
          
         return new ResponseEntity<String>(HttpStatus.OK);
     }
     
-    private String getMovieData(String title) throws IOException{
+    private void getMovieData(String title, Payload ePayload) throws IOException{
         title = title.substring(title.indexOf("\"") + 1, title.lastIndexOf("\""));
         title = title.replace(" ", "+");
         System.out.println("Text from User: " + title);
@@ -229,7 +195,39 @@ public class LineBotController
             c.close();
         }
         
-        return jObjGet;
+        Gson mGson = new Gson();
+        Movie movie = mGson.fromJson(jObjGet, Movie.class);
+        String msgToUser = " ";
+        
+        //Check user request
+        if (title.contains("title")){
+            msgToUser = movie.getMovie();
+            pushPoster(ePayload.events[0].source.userId, movie.getPoster());
+        } else if (title.contains("plot")){
+            msgToUser = movie.getPlot();
+        } else if (title.contains("released")){
+            msgToUser = movie.getReleased();
+        } else if (title.contains("poster")){
+            pushPoster(ePayload.events[0].source.userId, movie.getPoster());
+        } else if (title.contains("director")){
+            msgToUser = movie.getDirector();
+        } else if (title.contains("writer")){
+            msgToUser = movie.getWriter();
+        } else if (title.contains("awards")){
+            msgToUser = movie.getAwards();
+        } else if (title.contains("actors")){
+            msgToUser = movie.getActors();
+        } else if (title.contains("carousel")){
+            carouselForUser(movie.getPoster(), ePayload.events[0].source.userId, movie.getTitle());
+        }
+        
+        System.out.println("OMDb responses: " + msgToUser);
+        
+        if (msgToUser.length() <= 11 || !ePayload.events[0].message.type.equals("text")){
+            replyToUser(ePayload.events[0].replyToken, "Request Timeout");
+        } else {
+            replyToUser(ePayload.events[0].replyToken, msgToUser);
+        }
     }
 
     private void replyToUser(String rToken, String messageToUser){
