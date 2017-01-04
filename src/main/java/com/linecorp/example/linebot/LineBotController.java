@@ -121,22 +121,22 @@ public class LineBotController
                 replyToUser(payload.events[0].replyToken, "Hello Room");
             }
         } else if (eventType.equals("message")){
+            if (payload.events[0].source.type.equals("group")){
+                idTarget = payload.events[0].source.groupId;
+            } else if (payload.events[0].source.type.equals("room")){
+                idTarget = payload.events[0].source.roomId;
+            } else if (payload.events[0].source.type.equals("user")){
+                idTarget = payload.events[0].source.userId;
+            }
+            
             //Parsing message from user
             if (!payload.events[0].message.type.equals("text")){
                 upload_url = getUserContent(payload.events[0].message.id, payload.events[0].source.userId);
-                pushPoster(payload.events[0].source.userId, upload_url);
+                pushPoster(idTarget, upload_url);
             } else {
                 //Get movie data from OMDb API
                 msgText = payload.events[0].message.text;
                 msgText = msgText.toLowerCase();
-                
-                if (payload.events[0].source.type.equals("group")){
-                    idTarget = payload.events[0].source.groupId;
-                } else if (payload.events[0].source.type.equals("room")){
-                    idTarget = payload.events[0].source.roomId;
-                } else if (payload.events[0].source.type.equals("user")){
-                    idTarget = payload.events[0].source.userId;
-                }
                 
                 if (!msgText.contains("bot leave")){
                     try {
@@ -322,33 +322,21 @@ public class LineBotController
                 .execute();
             if (response.isSuccessful()) {
                 ResponseBody content = response.body();
-                try {
-                    InputStream imageStream = content.byteStream();
-                    Path path = Files.createTempFile(messageId, ".jpg");
-                    try (FileOutputStream out = new FileOutputStream(path.toFile())) {
-                        byte[] buffer = new byte[1024];
-                        int len;
-                        while ((len = imageStream.read(buffer)) != -1) {
-                            out.write(buffer, 0, len);
-                        }
-                    } catch (Exception e) {
-                        System.out.println("Exception is raised ");
+                InputStream imageStream = content.byteStream();
+                Path path = Files.createTempFile(messageId, ".jpg");
+                try (FileOutputStream out = new FileOutputStream(path.toFile())) {
+                    byte[] buffer = new byte[1024];
+                    int len;
+                    while ((len = imageStream.read(buffer)) != -1) {
+                        out.write(buffer, 0, len);
                     }
-                    Map uploadResult = cloudinary.uploader().upload(path.toFile(), ObjectUtils.emptyMap());
-                    System.out.println(uploadResult.toString());
-                    JSONObject jUpload = new JSONObject(uploadResult);
-                    uploadURL = jUpload.getString("secure_url");
-                    if (client.connect()) {
-                        System.out.println("DB connected");
-                        if (client.insert("files", messageId, content.byteStream(), source_id) == 1) {
-                            System.out.println("Record added");
-                        }
-                    }
-                    
-                } catch (ClassNotFoundException | SQLException e) {
+                } catch (Exception e) {
                     System.out.println("Exception is raised ");
-                    e.printStackTrace();
                 }
+                Map uploadResult = cloudinary.uploader().upload(path.toFile(), ObjectUtils.emptyMap());
+                System.out.println(uploadResult.toString());
+                JSONObject jUpload = new JSONObject(uploadResult);
+                uploadURL = jUpload.getString("secure_url");
             } else {
                 System.out.println(response.code() + " " + response.message());
             }
