@@ -110,6 +110,7 @@ public class LineBotController
         String msgText = " ";
         String upload_url = " ";
         String mJSON = " ";
+        String idTarget = " ";
         String eventType = payload.events[0].type;
         
         if (eventType.equals("join")){
@@ -129,9 +130,17 @@ public class LineBotController
                 msgText = payload.events[0].message.text;
                 msgText = msgText.toLowerCase();
                 
+                if (payload.events[0].source.type.equals("group")){
+                    idTarget = payload.events[0].source.groupId;
+                } else if (payload.events[0].source.type.equals("room")){
+                    idTarget = payload.events[0].source.roomId;
+                } else if (payload.events[0].source.type.equals("user")){
+                    idTarget = payload.events[0].source.userId;
+                }
+                
                 if (!msgText.contains("bot leave")){
                     try {
-                        getMovieData(msgText, payload);
+                        getMovieData(msgText, payload, idTarget);
                     } catch (IOException e) {
                         System.out.println("Exception is raised ");
                         e.printStackTrace();
@@ -144,20 +153,14 @@ public class LineBotController
                     }
                 }
                 
-                if (payload.events[0].source.type.equals("group")){
-                    pushType(payload.events[0].source.groupId, msgText + " - Group");
-                } else if (payload.events[0].source.type.equals("room")){
-                    pushType(payload.events[0].source.roomId, msgText + " - Room");
-                } else if (payload.events[0].source.type.equals("user")){
-                    pushType(payload.events[0].source.userId, msgText + " - User");
-                }
+                pushType(idTarget, msgText + " - " + payload.events[0].source.type);
             }
         }
          
         return new ResponseEntity<String>(HttpStatus.OK);
     }
     
-    private void getMovieData(String title, Payload ePayload) throws IOException{
+    private void getMovieData(String title, Payload ePayload, String targetID) throws IOException{
         String userTxt = title;
         title = title.substring(title.indexOf("\"") + 1, title.lastIndexOf("\""));
         title = title.replace(" ", "+");
@@ -206,13 +209,13 @@ public class LineBotController
         //Check user request
         if (userTxt.contains("title")){
             msgToUser = movie.getMovie();
-            pushPoster(ePayload.events[0].source.userId, movie.getPoster());
+            pushPoster(targetID, movie.getPoster());
         } else if (userTxt.contains("plot")){
             msgToUser = movie.getPlot();
         } else if (userTxt.contains("released")){
             msgToUser = movie.getReleased();
         } else if (userTxt.contains("poster")){
-            pushPoster(ePayload.events[0].source.userId, movie.getPoster());
+            pushPoster(targetID, movie.getPoster());
         } else if (userTxt.contains("director")){
             msgToUser = movie.getDirector();
         } else if (userTxt.contains("writer")){
