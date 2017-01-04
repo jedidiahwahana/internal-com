@@ -128,6 +128,14 @@ public class LineBotController
                 //Get movie data from OMDb API
                 msgText = payload.events[0].message.text;
                 msgText = msgText.toLowerCase();
+                
+                try {
+                    getMovieData(msgText, payload);
+                } catch (IOException e) {
+                    System.out.println("Exception is raised ");
+                    e.printStackTrace();
+                }
+                
                 if (payload.events[0].source.type.equals("group")){
                     pushType(payload.events[0].source.groupId, msgText + " - Group");
                     if (msgText.contains("leave")){
@@ -140,13 +148,6 @@ public class LineBotController
                     }
                 } else if (payload.events[0].source.type.equals("user")){
                     pushType(payload.events[0].source.userId, msgText + " - User");
-                }
-                
-                try {
-                    getMovieData(msgText, payload);
-                } catch (IOException e) {
-                    System.out.println("Exception is raised ");
-                    e.printStackTrace();
                 }
             }
         }
