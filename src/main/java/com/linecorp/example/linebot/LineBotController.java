@@ -156,6 +156,7 @@ public class LineBotController
     }
     
     private void getMovieData(String title, Payload ePayload) throws IOException{
+        String userTxt = title;
         title = title.substring(title.indexOf("\"") + 1, title.lastIndexOf("\""));
         title = title.replace(" ", "+");
         System.out.println("Text from User: " + title);
@@ -201,24 +202,24 @@ public class LineBotController
         String msgToUser = " ";
         
         //Check user request
-        if (title.contains("title")){
+        if (userTxt.contains("title")){
             msgToUser = movie.getMovie();
             pushPoster(ePayload.events[0].source.userId, movie.getPoster());
-        } else if (title.contains("plot")){
+        } else if (userTxt.contains("plot")){
             msgToUser = movie.getPlot();
-        } else if (title.contains("released")){
+        } else if (userTxt.contains("released")){
             msgToUser = movie.getReleased();
-        } else if (title.contains("poster")){
+        } else if (userTxt.contains("poster")){
             pushPoster(ePayload.events[0].source.userId, movie.getPoster());
-        } else if (title.contains("director")){
+        } else if (userTxt.contains("director")){
             msgToUser = movie.getDirector();
-        } else if (title.contains("writer")){
+        } else if (userTxt.contains("writer")){
             msgToUser = movie.getWriter();
-        } else if (title.contains("awards")){
+        } else if (userTxt.contains("awards")){
             msgToUser = movie.getAwards();
-        } else if (title.contains("actors")){
+        } else if (userTxt.contains("actors")){
             msgToUser = movie.getActors();
-        } else if (title.contains("carousel")){
+        } else if (userTxt.contains("carousel")){
             carouselForUser(movie.getPoster(), ePayload.events[0].source.userId, movie.getTitle());
         }
         
