@@ -222,7 +222,7 @@ public class LineBotController
             carouselForUser(movie.getPoster(), ePayload.events[0].source.userId, movie.getTitle());
         }
         
-        System.out.println("OMDb responses: " + msgToUser);
+        System.out.println("Message to user: " + msgToUser);
         
         if (msgToUser.length() <= 11 || !ePayload.events[0].message.type.equals("text")){
             replyToUser(ePayload.events[0].replyToken, "Request Timeout");
