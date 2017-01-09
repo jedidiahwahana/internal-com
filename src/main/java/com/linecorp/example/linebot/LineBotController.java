@@ -152,6 +152,12 @@ public class LineBotController
     
     private void getMovieData(String title, Payload ePayload, String targetID) throws IOException{
         String userTxt = title;
+        
+        if (title.indexOf("\"") == -1){
+            replyToUser(ePayload.events[0].replyToken, "Unknown keyword");
+            return;
+        }
+        
         title = title.substring(title.indexOf("\"") + 1, title.lastIndexOf("\""));
         System.out.println("Index: " + Integer.toString(title.indexOf("\"")));
         title = title.replace(" ", "+");
