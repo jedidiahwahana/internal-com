@@ -63,9 +63,6 @@ import com.linecorp.bot.model.response.BotApiResponse;
 import com.linecorp.bot.client.LineSignatureValidator;
 import com.linecorp.bot.client.LineMessagingServiceBuilder;
 
-import com.linecorp.example.linebot.db.DbContract;
-import com.linecorp.example.linebot.db.PostgresHelper;
-
 import com.cloudinary.*;
 import com.cloudinary.utils.ObjectUtils;
 
@@ -73,12 +70,6 @@ import com.cloudinary.utils.ObjectUtils;
 @RequestMapping(value="/linebot")
 public class LineBotController
 {
-    PostgresHelper client = new PostgresHelper(DbContract.URL);
-    
-    Cloudinary cloudinary = new Cloudinary(ObjectUtils.asMap("cloud_name", "jedidiahwahana",
-                                                             "api_key", "265895536179732",
-                                                             "api_secret", "sECFj7nAX6PWG29qf7OsU-BC7kY"));
-    
     private static final String CHANNEL_SECRET = "17ba02a5c5c2307b0f9579d52ec48c58";
     private static final String CHANNEL_ACCESS_TOKEN = "3eb2RUEBHvOVQwBmD25oX8cjEDlIbzElCeVRNM2DeAXOLt8HV6dsSYcFDqtgNOtsCA8ylswoY2DEyeirTSNxrNKOTosCqEsS2ctLomVuy3KOCs8SB2BTwj8S3h5CYxnAkTnuT3pS2AxGaIvxHK7ofwdB04t89/1O/w1cDnyilFU=";
     
