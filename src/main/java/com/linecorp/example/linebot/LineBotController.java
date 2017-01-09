@@ -19,12 +19,9 @@ import java.time.LocalDateTime;
 import java.sql.SQLException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.beans.factory.annotation.*;
+
 
 import org.apache.http.HttpResponse;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -70,9 +67,14 @@ import com.cloudinary.utils.ObjectUtils;
 @RequestMapping(value="/linebot")
 public class LineBotController
 {
-    private static final String CHANNEL_SECRET = "17ba02a5c5c2307b0f9579d52ec48c58";
-    private static final String CHANNEL_ACCESS_TOKEN = "3eb2RUEBHvOVQwBmD25oX8cjEDlIbzElCeVRNM2DeAXOLt8HV6dsSYcFDqtgNOtsCA8ylswoY2DEyeirTSNxrNKOTosCqEsS2ctLomVuy3KOCs8SB2BTwj8S3h5CYxnAkTnuT3pS2AxGaIvxHK7ofwdB04t89/1O/w1cDnyilFU=";
+    @Autowired
+    @Qualifier("com.linecorp.channel_secret")
+    String lChannelSecret;
     
+    @Autowired
+    @Qualifier("com.linecorp.channel_access_token")
+    String lChannelAccessToken;
+
     @RequestMapping(value="/callback", method=RequestMethod.POST)
     public ResponseEntity<String> callback(
         @RequestHeader("X-Line-Signature") String aXLineSignature,
@@ -84,7 +86,7 @@ public class LineBotController
         
         System.out.println(text);
         
-        final boolean valid=new LineSignatureValidator(CHANNEL_SECRET.getBytes()).validateSignature(aPayload.getBytes(), aXLineSignature);
+        final boolean valid=new LineSignatureValidator(lChannelSecret.getBytes()).validateSignature(aPayload.getBytes(), aXLineSignature);
         
         System.out.println("The signature is: " + (valid ? "valid" : "tidak valid"));
         
@@ -239,7 +241,7 @@ public class LineBotController
         ReplyMessage replyMessage = new ReplyMessage(rToken, textMessage);
         try {
             Response<BotApiResponse> response = LineMessagingServiceBuilder
-                .create(CHANNEL_ACCESS_TOKEN)
+                .create(lChannelAccessToken)
                 .build()
                 .replyMessage(replyMessage)
                 .execute();
@@ -255,7 +257,7 @@ public class LineBotController
         PushMessage pushMessage = new PushMessage(sourceId,imageMessage);
         try {
             Response<BotApiResponse> response = LineMessagingServiceBuilder
-                .create(CHANNEL_ACCESS_TOKEN)
+                .create(lChannelAccessToken)
                 .build()
                 .pushMessage(pushMessage)
                 .execute();
@@ -271,7 +273,7 @@ public class LineBotController
         PushMessage pushMessage = new PushMessage(sourceId,textMessage);
         try {
             Response<BotApiResponse> response = LineMessagingServiceBuilder
-            .create(CHANNEL_ACCESS_TOKEN)
+            .create(lChannelAccessToken)
             .build()
             .pushMessage(pushMessage)
             .execute();
@@ -298,7 +300,7 @@ public class LineBotController
         PushMessage pushMessage = new PushMessage(sourceId,templateMessage);
         try {
             Response<BotApiResponse> response = LineMessagingServiceBuilder
-                .create(CHANNEL_ACCESS_TOKEN)
+                .create(lChannelAccessToken)
                 .build()
                 .pushMessage(pushMessage)
                 .execute();
@@ -313,14 +315,14 @@ public class LineBotController
         try {
             if (type.equals("group")){
                 Response<BotApiResponse> response = LineMessagingServiceBuilder
-                    .create(CHANNEL_ACCESS_TOKEN)
+                    .create(lChannelAccessToken)
                     .build()
                     .leaveGroup(id)
                     .execute();
                 System.out.println(response.code() + " " + response.message());
             } else if (type.equals("room")){
                 Response<BotApiResponse> response = LineMessagingServiceBuilder
-                    .create(CHANNEL_ACCESS_TOKEN)
+                    .create(lChannelAccessToken)
                     .build()
                     .leaveRoom(id)
                     .execute();
