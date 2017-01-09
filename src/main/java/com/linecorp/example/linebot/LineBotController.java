@@ -131,8 +131,7 @@ public class LineBotController
             
             //Parsing message from user
             if (!payload.events[0].message.type.equals("text")){
-                upload_url = getUserContent(payload.events[0].message.id, payload.events[0].source.userId);
-                pushPoster(idTarget, upload_url);
+                replyToUser(payload.events[0].replyToken, "Unknown message");
             } else {
                 //Get movie data from OMDb API
                 msgText = payload.events[0].message.text;
@@ -310,41 +309,6 @@ public class LineBotController
             System.out.println("Exception is raised ");
             e.printStackTrace();
         }
-    }
-    
-    private String getUserContent(String messageId, String source_id){
-        String uploadURL = " ";
-        try {
-            Response<ResponseBody> response = LineMessagingServiceBuilder
-                .create(CHANNEL_ACCESS_TOKEN)
-                .build()
-                .getMessageContent(messageId)
-                .execute();
-            if (response.isSuccessful()) {
-                ResponseBody content = response.body();
-                InputStream imageStream = content.byteStream();
-                Path path = Files.createTempFile(messageId, ".jpg");
-                try (FileOutputStream out = new FileOutputStream(path.toFile())) {
-                    byte[] buffer = new byte[1024];
-                    int len;
-                    while ((len = imageStream.read(buffer)) != -1) {
-                        out.write(buffer, 0, len);
-                    }
-                } catch (Exception e) {
-                    System.out.println("Exception is raised ");
-                }
-                Map uploadResult = cloudinary.uploader().upload(path.toFile(), ObjectUtils.emptyMap());
-                System.out.println(uploadResult.toString());
-                JSONObject jUpload = new JSONObject(uploadResult);
-                uploadURL = jUpload.getString("secure_url");
-            } else {
-                System.out.println(response.code() + " " + response.message());
-            }
-        } catch (IOException e) {
-            System.out.println("Exception is raised ");
-            e.printStackTrace();
-        }
-        return uploadURL;
     }
     
     private void leaveGR(String id, String type){
