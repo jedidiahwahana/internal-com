@@ -153,6 +153,7 @@ public class LineBotController
     private void getMovieData(String title, Payload ePayload, String targetID) throws IOException{
         String userTxt = title;
         title = title.substring(title.indexOf("\"") + 1, title.lastIndexOf("\""));
+        System.out.println("Index: " + Integer.toString(title.indexOf("\"")));
         title = title.replace(" ", "+");
         System.out.println("Text from User: " + title);
         
