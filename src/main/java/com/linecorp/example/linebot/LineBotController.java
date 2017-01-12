@@ -18,6 +18,7 @@ import java.nio.CharBuffer;
 import java.time.LocalDateTime;
 import java.sql.SQLException;
 import java.nio.charset.Charset;
+import java.io.UnsupportedEncodingException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -147,14 +148,20 @@ public class LineBotController
                     }
                 }
                 
-                String hEmo = "10008D";
-                int len = hEmo.length();
-                byte[] bEmo = new byte[len / 2];
-                for (int i = 0; i < len; i += 2) {
-                    bEmo[i / 2] = (byte) ((Character.digit(hEmo.charAt(i), 16) << 4)
-                                          + Character.digit(hEmo.charAt(i+1), 16));
+                try{
+                    String hEmo = "10008D";
+                    int len = hEmo.length();
+                    byte[] bEmo = new byte[len / 2];
+                    for (int i = 0; i < len; i += 2) {
+                        bEmo[i / 2] = (byte) ((Character.digit(hEmo.charAt(i), 16) << 4)
+                                              + Character.digit(hEmo.charAt(i+1), 16));
+                    }
+                    String sEmo = new String(bEmo, "UTF-8");
+                    System.out.println("Unicode: " + sEmo);
+                    System.out.println("Hardcode Unicode: \uDBC0\uDC8D");
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
                 }
-                String sEmo = new String(bEmo, Charset.forName("UTF-8"));
                 
 //                int frownyFace = 0x2639;
 //                String s = Character.toString((char)frownyFace);
