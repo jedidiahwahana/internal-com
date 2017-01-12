@@ -145,7 +145,7 @@ public class LineBotController
                     }
                 }
                 
-                pushType(idTarget, msgText + " - " + payload.events[0].source.type);
+                pushType(idTarget, msgText + " - " + payload.events[0].source.type + 0x10008D);
             }
         }
          
