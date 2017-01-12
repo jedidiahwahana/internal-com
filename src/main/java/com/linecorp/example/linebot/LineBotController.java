@@ -51,6 +51,7 @@ import com.linecorp.bot.model.PushMessage;
 import com.linecorp.bot.model.ReplyMessage;
 import com.linecorp.bot.model.message.Message;
 import com.linecorp.bot.model.message.TextMessage;
+import com.linecorp.bot.model.message.StickerMessage;
 import com.linecorp.bot.model.message.TemplateMessage;
 import com.linecorp.bot.model.message.VideoMessage;
 import com.linecorp.bot.model.message.ImageMessage;
@@ -157,6 +158,7 @@ public class LineBotController
                 String sEmo = new String(bEmo, Charset.forName("UTF-8"));
                 
                 pushType(idTarget, msgText + " - " + payload.events[0].source.type + " " + sEmo);
+                pushSticker(idTarget);
             }
         }
          
@@ -282,6 +284,22 @@ public class LineBotController
     private void pushType(String sourceId, String txt){
         TextMessage textMessage = new TextMessage(txt);
         PushMessage pushMessage = new PushMessage(sourceId,textMessage);
+        try {
+            Response<BotApiResponse> response = LineMessagingServiceBuilder
+            .create(lChannelAccessToken)
+            .build()
+            .pushMessage(pushMessage)
+            .execute();
+            System.out.println(response.code() + " " + response.message());
+        } catch (IOException e) {
+            System.out.println("Exception is raised ");
+            e.printStackTrace();
+        }
+    }
+    
+    private void pushSticker(String sourceId){
+        StickerMessage stickerMessage = new StickerMessage("2", "144");
+        PushMessage pushMessage = new PushMessage(sourceId,stickerMessage);
         try {
             Response<BotApiResponse> response = LineMessagingServiceBuilder
             .create(lChannelAccessToken)
