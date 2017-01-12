@@ -147,14 +147,14 @@ public class LineBotController
                     }
                 }
                 
-                String hEmo = "0x10008D";
+                int iEmo = 0x10008D;
+                String hEmo = Integer.toHexString(iEmo);
                 int len = hEmo.length();
                 byte[] bEmo = new byte[len / 2];
                 for (int i = 0; i < len; i += 2) {
                     bEmo[i / 2] = (byte) ((Character.digit(hEmo.charAt(i), 16) << 4)
                                           + Character.digit(hEmo.charAt(i+1), 16));
                 }
-                
                 String sEmo = new String(bEmo, Charset.forName("UTF-8"));
                 
                 pushType(idTarget, msgText + " - " + payload.events[0].source.type + " " + sEmo);
