@@ -156,7 +156,10 @@ public class LineBotController
                 }
                 String sEmo = new String(bEmo, Charset.forName("UTF-8"));
                 
-                pushType(idTarget, msgText + " - " + payload.events[0].source.type + " " + sEmo);
+//                int frownyFace = 0x2639;
+//                String s = Character.toString((char)frownyFace);
+                
+                pushType(idTarget, msgText + " - " + payload.events[0].source.type + " \uDBC0\uDC8D");
                 pushSticker(idTarget);
             }
         }
