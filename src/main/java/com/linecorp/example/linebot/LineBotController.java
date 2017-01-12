@@ -17,6 +17,7 @@ import java.nio.file.Files;
 import java.nio.CharBuffer;
 import java.time.LocalDateTime;
 import java.sql.SQLException;
+import java.nio.charset.Charset;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -145,7 +146,17 @@ public class LineBotController
                     }
                 }
                 
-                pushType(idTarget, msgText + " - " + payload.events[0].source.type + 0x10008D);
+                String hEmo = "0x10008D";
+                int len = hEmo.length();
+                byte[] bEmo = new byte[len / 2];
+                for (int i = 0; i < len; i += 2) {
+                    bEmo[i / 2] = (byte) ((Character.digit(hEmo.charAt(i), 16) << 4)
+                                          + Character.digit(hEmo.charAt(i+1), 16));
+                }
+                
+                String sEmo = new String(bEmo, Charset.forName("UTF-8"));
+                
+                pushType(idTarget, msgText + " - " + payload.events[0].source.type + " " + sEmo);
             }
         }
          
