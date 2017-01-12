@@ -155,7 +155,7 @@ public class LineBotController
                     bEmo[i / 2] = (byte) ((Character.digit(hEmo.charAt(i), 16) << 4)
                                           + Character.digit(hEmo.charAt(i+1), 16));
                 }
-                String sEmo = new String(bEmo, Charset.forName("UTF-8"));
+                String sEmo = new String(bEmo, Charset.forName("UTF-16"));
                 
                 pushType(idTarget, msgText + " - " + payload.events[0].source.type + " " + sEmo);
                 pushSticker(idTarget);
