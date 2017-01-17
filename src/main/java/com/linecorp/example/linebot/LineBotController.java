@@ -148,26 +148,8 @@ public class LineBotController
                     }
                 }
                 
-                try{
-                    String hEmo = "10008D";
-                    int len = hEmo.length();
-                    byte[] bEmo = new byte[len / 2];
-                    for (int i = 0; i < len; i += 2) {
-                        bEmo[i / 2] = (byte) ((Character.digit(hEmo.charAt(i), 16) << 4)
-                                              + Character.digit(hEmo.charAt(i+1), 16));
-                    }
-                    String sEmo = new String(bEmo, "UTF-8");
-                    System.out.println("Unicode: " + sEmo);
-                    System.out.println("Hardcode Unicode: \uDBC0\uDC8D");
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
-                
-//                int frownyFace = 0x2639;
-//                String s = Character.toString((char)frownyFace);
-                
-                pushType(idTarget, msgText + " - " + payload.events[0].source.type + " \uDBC0\uDC8D");
-                pushSticker(idTarget);
+                String emo = new String(Character.toChars(0x10008D));
+                pushType(idTarget, msgText + " - " + payload.events[0].source.type + emo);
             }
         }
          
@@ -293,22 +275,6 @@ public class LineBotController
     private void pushType(String sourceId, String txt){
         TextMessage textMessage = new TextMessage(txt);
         PushMessage pushMessage = new PushMessage(sourceId,textMessage);
-        try {
-            Response<BotApiResponse> response = LineMessagingServiceBuilder
-            .create(lChannelAccessToken)
-            .build()
-            .pushMessage(pushMessage)
-            .execute();
-            System.out.println(response.code() + " " + response.message());
-        } catch (IOException e) {
-            System.out.println("Exception is raised ");
-            e.printStackTrace();
-        }
-    }
-    
-    private void pushSticker(String sourceId){
-        StickerMessage stickerMessage = new StickerMessage("2", "144");
-        PushMessage pushMessage = new PushMessage(sourceId,stickerMessage);
         try {
             Response<BotApiResponse> response = LineMessagingServiceBuilder
             .create(lChannelAccessToken)
