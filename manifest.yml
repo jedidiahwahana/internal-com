@@ -6,3 +6,8 @@ applications:
   name: internal-com
   host: internal-com
   disk_quota: 1024M
+  services:
+  - Conversation-ic
+  - Retrieve and Rank-uy
+  - ElephantSQL-qt
+  - Compose for Redis-hz
