@@ -1,5 +1,5 @@
 
-package com.linecorp.example.linebot;
+package com.linecorp.example.internalcom;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

@@ -1,4 +1,4 @@
-package com.linecorp.example.linebot;
+package com.linecorp.example.internalcom.model;
 
 import java.util.List;
 
